@@ -47,3 +47,19 @@ When a player is at a crafting or other workstation, he/she can click on the rec
 (The withdraw the full amount, CTRL+Middle Mouse Button can be used)  
   
 Note: Players without the client-side mod can still join and play the server, but won't be able to make use of this feature.
+
+## Support me!
+* I have a Patreon now so please support me [Here](patreon.com/user?u=97347013) so I can mod as much as I can!
+* 10$ Patreons get early access to releases. (I need some way to test mods before I release them to the public :D)
+
+## Developer & credits
+<details>
+
+### V rising modding discord [Discord](https://discord.gg/XY5bNtNm4w)
+### Current Developer
+- `skythebro/skyKDG` - Also known as realsky on discord
+
+### Original Creator & Developer
+- [WhiteFang5](https://github.com/WhiteFang5/VMods)
+
+</details>
