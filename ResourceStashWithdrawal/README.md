@@ -25,7 +25,7 @@ ResourceStashWithdrawalEnabled = true
 ```
 
 ## Support me!
-* I have a Patreon now so please support me [Here](patreon.com/user?u=97347013) so I can mod as much as I can!
+* I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
 * 10$ Patreons get early access to releases. (I need some way to test mods before I release them to the public :D)
 
 ## Developer & credits
