@@ -46,10 +46,20 @@ BloodRefillExcludeVBloodFromSameBloodTypeCheck = true
 # Default value: 3
 BloodRefillVBloodRefillType = 3
 
+## 0 = disabled (i.e. normal refill); 1 = normal refill but not if the player is above BloodRefillBloodCutoffThreshold % of blood quality.
+# Setting type: Int32
+# Default value: 1
+BloodRefillBloodRefillType = 1
+
+## [Only applies when BloodRefillBloodRefillType is set to 1] The blood quality percentage cutoff threshold (i.e. if the player's blood quality is above this threshold, npc blood will not refill the player's blood).
+# Setting type: Single
+# Default value: 95
+BloodRefillBloodCutoffThreshold = 95
+
 ## [Only applies when BloodRefillVBloodRefillType is set to 3] The blood quality percentage cutoff threshold (i.e. if the player's blood quality is above this threshold, V-blood will not refill the player's blood).
 # Setting type: Single
 # Default value: 95
-BloodRefillCutoffThreshold = 95
+BloodRefillVBloodCutoffThreshold = 95
 
 ## [Only applies when BloodRefillVBloodRefillType is set to 2 or 3] The multiplier used in the V-blood refill calculation ('EnemyLevel' * 'BloodRefillVBloodRefillMultiplier' * 'BloodRefillMultiplier').
 # Setting type: Single
