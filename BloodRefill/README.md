@@ -6,7 +6,7 @@ forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Glo
 * The amount of blood regained is based on the level difference, blood type and blood quality of the killed enemy with V-Bloods refilling your blood pool for a much larger amount.
 * Specific blood types can also be disabled so no blood can be regained from them.
 * Theres also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
-* Lots of changes can be made in the config as you can see [<ins>**_Configurable Values_**<ins/>](#configurable-values)
+* Lots of changes can be made in the config as you can see [<ins>**_Configurable Values_**<ins/>](#Configurable-Values)
 
 ---
 
