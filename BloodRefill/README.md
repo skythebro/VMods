@@ -4,7 +4,9 @@ forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Glo
 # A server-side only mod that allows players to refill their blood pool.
 * When feed-killing an enemy, you'll be able to regain some blood.
 * The amount of blood regained is based on the level difference, blood type and blood quality of the killed enemy with V-Bloods refilling your blood pool for a much larger amount.
-* Lots of changes can be made in the config as you can see in <ins>**_Configurable Values_**<ins/>
+* Specific blood types can also be disabled so no blood can be regained from them.
+* Theres also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
+* Lots of changes can be made in the config as you can see [<ins>**_Configurable Values_**<ins/>](#configurable-values)
 
 ---
 
@@ -36,12 +38,52 @@ BloodRefillRequiresFeeding = true
 # Default value: true
 BloodRefillRequiresSameBloodType = true
 
+## When enabled, creature blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillCreatureEnabled = true
+
+## When enabled, warrior blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillWarriorEnabled = true
+
+## When enabled, rogue blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillRogueEnabled = true
+
+## When enabled, brute blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillBruteEnabled = true
+
+## When enabled, scholar blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillScholarEnabled = true
+
+## When enabled, worker blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillWorkerEnabled = true
+
+## When enabled, mutant blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillMutantEnabled = true
+
+## When enabled, V-blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillVBloodEnabled = true
+
 ## When enabled, V-blood is excluded from the 'same blood type' check (i.e. it's always considered to be 'the same blood type' as the player's blood type).
 # Setting type: Boolean
 # Default value: true
 BloodRefillExcludeVBloodFromSameBloodTypeCheck = true
 
-## 0 = disabled (i.e. normal refill); 1 = fully refill; 2 = refill based on V-blood monster level; 3 = refill based on V-blood monster level but not if the player is above BloodRefillCutoffThreshold % of blood quality.
+## 0 = disabled (i.e. normal refill); 1 = fully refill; 2 = refill based on V-blood monster level; 3 = refill based on V-blood monster level but not if the player is above BloodRefillVBloodCutoffThreshold % of blood quality. only works when BloodRefillVBloodEnabled is enabled.
 # Setting type: Int32
 # Default value: 3
 BloodRefillVBloodRefillType = 3
@@ -79,7 +121,7 @@ BloodRefillAmount = 1
 ## The multiplier used in the blood refill calculation. [Formula: (('Enemy Level' / 'Player Level') * ((100 - ('Player Blood Quality %' - 'Enemy Blood Quality %')) / 100)) * 'BloodRefillAmount' * '(If applicable) BloodRefillDifferentBloodTypeMultiplier' * 'BloodRefillMultiplier']
 # Setting type: Single
 # Default value: 0.5
-BloodRefillMultiplier = 0.5
+BloodRefillMultiplier = 1
 
 ## The multiplier used in the blood refill calculation as a penalty for feeding on a different blood type (only works when BloodRefillRequiresSameBloodType is disabled).
 # Setting type: Single
@@ -93,7 +135,7 @@ BloodRefillSendRefillMessage = true
 
 [CommandSystemConfig]
 
-## Leave disabled for now because It interferes with community commands. Enabled/disable the Commands system (for this specific mod)..
+## Leave disabled for now because It interferes with community commands. Enabled/disable the Commands system (for this specific mod).
 # Setting type: Boolean
 # Default value: false
 CommandSystemEnabled = false
