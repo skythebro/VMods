@@ -12,7 +12,7 @@ forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Glo
 - Place the **_VMods.ResourceStashWithdrawal.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder and your `(Vrising)\BepInEx\plugins` folder.
 - If you're using <ins>**_ServerLaunchFix_**</ins> you only need to place the **_VMods.ResourceStashWithdrawal.dll_** file inside of `(Vrising)\BepInEx\plugins` folder.
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
-- **_Note:_** Players without the client-side mod can still join and play the server, but won't be able to make use of this feature.
+- **_Note:_** Players without the client-side mod can still join and play on the server, but won't be able to make use of this feature.
 ---
 ## Configurable Values
 ```ini

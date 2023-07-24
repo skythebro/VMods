@@ -11,6 +11,7 @@ forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Glo
 ---
 
 ## Installation
+- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/)(optional) to work.
 - Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
@@ -18,7 +19,8 @@ forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Glo
 ---
 
 ## Configurable Values
-
+- This mod for now has one command and that is to save the _**BloodRefill.json**_ file `.bloodrefill(blrf) saveall(svall)` this file stores bloodrefill data.
+- The mod already automatically does this with every auto save and on server shutdown/start so there's no real necessity to use this command.
 ```ini
 
 [BloodRefillConfig]
@@ -121,38 +123,22 @@ BloodRefillAmount = 1
 ## The multiplier used in the blood refill calculation. [Formula: (('Enemy Level' / 'Player Level') * ((100 - ('Player Blood Quality %' - 'Enemy Blood Quality %')) / 100)) * 'BloodRefillAmount' * '(If applicable) BloodRefillDifferentBloodTypeMultiplier' * 'BloodRefillMultiplier']
 # Setting type: Single
 # Default value: 0.5
-BloodRefillMultiplier = 1
+BloodRefillMultiplier = 0.5
 
 ## The multiplier used in the blood refill calculation as a penalty for feeding on a different blood type (only works when BloodRefillRequiresSameBloodType is disabled).
 # Setting type: Single
 # Default value: 0.1
 BloodRefillDifferentBloodTypeMultiplier = 0.1
 
-## When enabled, a refill chat message is sent to the player.
-# Setting type: Boolean
-# Default value: true
-BloodRefillSendRefillMessage = true
-
-[CommandSystemConfig]
-
-## Leave disabled for now because It interferes with community commands. Enabled/disable the Commands system (for this specific mod).
+## NOT WORKING: (this will not work until bloodstone gets updated to fix server to client serialization) When enabled, a refill chat message is sent to the player.
 # Setting type: Boolean
 # Default value: false
-CommandSystemEnabled = false
-
-## The prefix that needs to be used to execute a command (for this specific mod).
-# Setting type: String
-# Default value: !
-CommandSystemPrefix = !
-
-## The amount of seconds between two commands (for non-admins).
-# Setting type: Single
-# Default value: 5
-CommandSystemCommandCooldown = 5
+BloodRefillSendRefillMessage = false
 ```
 ## Support me!
 * I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
 * 10$ Patreons get early access to releases. (I need some way to test mods before I release them to the public :D)
+
 
 ## Developer & credits
 <details>
