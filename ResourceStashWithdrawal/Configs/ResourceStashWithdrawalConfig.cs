@@ -14,7 +14,7 @@ namespace VMods.ResourceStashWithdrawal
 
 		public static void Initialize(ConfigFile config)
 		{
-			ResourceStashWithdrawalEnabled = config.Bind("Server", nameof(ResourceStashWithdrawalEnabled), false, "Enabled/disable the resource stash withdrawal system.");
+			ResourceStashWithdrawalEnabled = config.Bind("Server", nameof(ResourceStashWithdrawalEnabled), true, "Enabled/disable the resource stash withdrawal system.");
 		}
 
 		#endregion

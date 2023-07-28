@@ -7,12 +7,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Unity.IL2CPP.Utils;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using VMods.Shared;
-using Wetstone.API;
-using static BepInEx.IL2CPP.Utils.MonoBehaviourExtensions;
+using Bloodstone.API;
+using ProjectM.Network;
+using Unity.Collections;
 
 namespace VMods.ResourceStashWithdrawal
 {
@@ -30,14 +32,14 @@ namespace VMods.ResourceStashWithdrawal
 				return;
 			}
 
-			RefinementstationRecipeEntry refinementstationRecipeEntry = __instance.GetComponent<RefinementstationRecipeEntry>();
-			RefinementstationRecipeItem refinementstationRecipeItem = __instance.GetComponent<RefinementstationRecipeItem>();
-			ItemGridSelectionEntry itemGridSelectionEntry = __instance.GetComponent<ItemGridSelectionEntry>();
-			WorkstationRecipeGridSelectionEntry workstationRecipeGridSelectionEntry = __instance.GetComponent<WorkstationRecipeGridSelectionEntry>();
-			ResearchEntry researchEntry = __instance.GetComponent<ResearchEntry>();
-			BuildMenu_StructureEntry buildMenuStructureEntry = __instance.GetComponent<BuildMenu_StructureEntry>();
-			if(refinementstationRecipeEntry == null && refinementstationRecipeItem == null && itemGridSelectionEntry == null &&
-				workstationRecipeGridSelectionEntry == null && researchEntry == null && buildMenuStructureEntry == null)
+			var hasRefinementstationRecipeEntry = __instance.TryGetComponent<RefinementstationRecipeEntry>(out var refinementstationRecipeEntry);
+			var hasRefinementstationRecipeItem = __instance.TryGetComponent<RefinementstationRecipeItem>(out var refinementstationRecipeItem);
+			var hasItemGridSelectionEntry = __instance.TryGetComponent<ItemGridSelectionEntry>(out var itemGridSelectionEntry);
+			var hasWorkstationRecipeGridSelectionEntry = __instance.TryGetComponent<WorkstationRecipeGridSelectionEntry>(out var workstationRecipeGridSelectionEntry);
+			var hasResearchEntry = __instance.TryGetComponent<ResearchEntry>(out var researchEntry);
+			var hasBuildMenuStructureEntry = __instance.TryGetComponent<BuildMenu_StructureEntry>(out var buildMenuStructureEntry);
+			if(!hasRefinementstationRecipeEntry && !hasRefinementstationRecipeItem && !hasItemGridSelectionEntry &&
+			   !hasWorkstationRecipeGridSelectionEntry && !hasResearchEntry && !hasBuildMenuStructureEntry)
 			{
 #if DEBUG
 				Utils.Logger.LogMessage($"Unknown/unhandled {nameof(GridSelectionEntry)} PointerEnter for Type: {__instance.GetScriptClassName()}");
@@ -105,8 +107,14 @@ namespace VMods.ResourceStashWithdrawal
 			var entityManager = client.EntityManager;
 			var gameDataSystem = client.GetExistingSystem<GameDataSystem>();
 			var clientGameManager = client.GetExistingSystem<ClientScriptMapper>()?._ClientGameManager;
-			var teamChecker = clientGameManager._TeamChecker;
-			var character = EntitiesHelper.GetLocalCharacterEntity(entityManager);
+			Entity userCharEntity = Entity.Null;
+			foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp))
+			{
+				entityManager.TryGetComponentData<User>(UsersEntity, out var userComponent);
+				userCharEntity = userComponent.LocalCharacter._Entity;
+			}
+
+			var character = userCharEntity;
 
 			// Ensure we're hovering a single item or the recipe as a whole
 			PrefabGUID? itemGUID = null;
@@ -118,11 +126,11 @@ namespace VMods.ResourceStashWithdrawal
 				RefinementstationRecipeEntry.Data recipe;
 				if(refinementstationSubMenu != null)
 				{
-					recipe = refinementstationSubMenu.RecipesSelectionGroup.Entries[refinementstationRecipeEntry.EntryIndex];
+					recipe = refinementstationSubMenu.RecipesSelectionGroup.Entries._items[refinementstationRecipeEntry.EntryIndex];
 				}
 				else if(unitSpawnerstationSubMenu != null)
 				{
-					recipe = unitSpawnerstationSubMenu.RecipesSelectionGroup.Entries[refinementstationRecipeEntry.EntryIndex];
+					recipe = unitSpawnerstationSubMenu.RecipesSelectionGroup.Entries._items[refinementstationRecipeEntry.EntryIndex];
 				}
 				else
 				{
@@ -153,22 +161,23 @@ namespace VMods.ResourceStashWithdrawal
 
 				if(inventorySubMenu != null && itemGridSelectionEntry.SyncedEntity != Entity.Null)
 				{
-					if(entityManager.HasComponent<Durability>(itemGridSelectionEntry.SyncedEntity))
+					var hasDurability = entityManager.TryGetComponentData<Durability>(itemGridSelectionEntry.SyncedEntity, out var durability);
+					if(hasDurability)
 					{
 						var prefabCollectionSystem = client.GetExistingSystem<PrefabCollectionSystem>();
 						var prefabLookupMap = prefabCollectionSystem.PrefabLookupMap;
 
 						repairItemGUIDs = new();
-						var durability = entityManager.GetComponentData<Durability>(itemGridSelectionEntry.SyncedEntity);
 						var repairCosts = durability.GetRepairCost(prefabLookupMap, entityManager);
 						foreach(var repairCost in repairCosts)
 						{
 							repairItemGUIDs.Add(repairCost.Guid);
 						}
 					}
-					if(entityManager.HasComponent<StoredBlood>(itemGridSelectionEntry.SyncedEntity))
+					var hasStoredBlood = entityManager.TryGetComponentData<StoredBlood>(itemGridSelectionEntry.SyncedEntity, out var blood);
+					if(hasStoredBlood)
 					{
-						storedBlood = entityManager.GetComponentData<StoredBlood>(itemGridSelectionEntry.SyncedEntity);
+						storedBlood = blood;
 					}
 				}
 			}
@@ -177,11 +186,11 @@ namespace VMods.ResourceStashWithdrawal
 				WorkstationRecipeGridSelectionEntry.Data recipe;
 				if(workstationSubMenu != null)
 				{
-					recipe = workstationSubMenu.RecipesGridSelectionGroup.Entries[workstationRecipeGridSelectionEntry.EntryIndex];
+					recipe = workstationSubMenu.RecipesGridSelectionGroup.Entries._items[workstationRecipeGridSelectionEntry.EntryIndex];
 				}
 				else if(inventorySubMenu != null)
 				{
-					recipe = inventorySubMenu.RecipesGridSelectionGroup.Entries[workstationRecipeGridSelectionEntry.EntryIndex];
+					recipe = inventorySubMenu.RecipesGridSelectionGroup.Entries._items[workstationRecipeGridSelectionEntry.EntryIndex];
 				}
 				else
 				{
@@ -193,18 +202,21 @@ namespace VMods.ResourceStashWithdrawal
 				if(gameDataSystem.RecipeHashLookupMap.ContainsKey(recipe.EntryId))
 				{
 					var recipeData = gameDataSystem.RecipeHashLookupMap[recipe.EntryId];
-					if(entityManager.HasComponent<RecipeRequirementBuffer>(recipeData.Entity))
+					var hasRecipeRequirementBuffer = entityManager.TryGetBuffer<RecipeRequirementBuffer>(recipeData.Entity, out var requirements);
+					if(hasRecipeRequirementBuffer)
 					{
-						var requirements = entityManager.GetBuffer<RecipeRequirementBuffer>(recipeData.Entity);
 						requiredItemGUIDs = new();
 						foreach(var requirement in requirements)
 						{
 							requiredItemGUIDs.Add(requirement.Guid);
 						}
 					}
-					if(entityManager.HasComponent<RecipeOutputBuffer>(recipeData.Entity))
+					
+					var hasRecipeOutputBuffer = entityManager.TryGetBuffer<RecipeOutputBuffer>(recipeData.Entity, out var outputs);
+					
+					if(hasRecipeOutputBuffer)
 					{
-						itemGUID = entityManager.GetBuffer<RecipeOutputBuffer>(recipeData.Entity)[0].Guid;
+						itemGUID = outputs[0].Guid;
 					}
 				}
 			}
@@ -212,10 +224,10 @@ namespace VMods.ResourceStashWithdrawal
 			{
 				foreach(var category in researchstationSubMenu.ResearchCategories)
 				{
-					if(category.ResearchGridSelectionGroup.Entries.Count > researchEntry.EntryIndex &&
-						category.ResearchGridSelectionGroup.Entries[researchEntry.EntryIndex].EntryId == researchEntry.EntryId)
+					if(category.ResearchGridSelectionGroup.Entries._items.Count > researchEntry.EntryIndex &&
+						category.ResearchGridSelectionGroup.Entries._items[researchEntry.EntryIndex].EntryId == researchEntry.EntryId)
 					{
-						var recipe = category.ResearchGridSelectionGroup.Entries[researchEntry.EntryIndex];
+						var recipe = category.ResearchGridSelectionGroup.Entries._items[researchEntry.EntryIndex];
 						requiredItemGUIDs = new();
 						foreach(var requiredItem in recipe.Requirements)
 						{
@@ -230,13 +242,15 @@ namespace VMods.ResourceStashWithdrawal
 			}
 			else if(buildMenuStructureEntry != null)
 			{
+				
 				if(gameDataSystem.BlueprintHashLookupMap.ContainsKey(buildMenuStructureEntry.PrefabGuid))
 				{
 					var blueprintData = gameDataSystem.BlueprintHashLookupMap[buildMenuStructureEntry.PrefabGuid];
-					if(entityManager.HasComponent<BlueprintRequirementBuffer>(blueprintData.Entity))
+					var hasBlueprintRequirementBuffer = entityManager.TryGetBuffer<BlueprintRequirementBuffer>(blueprintData.Entity, out var requirements);
+					
+					if(hasBlueprintRequirementBuffer)
 					{
 						requiredItemGUIDs = new();
-						var requirements = entityManager.GetBuffer<BlueprintRequirementBuffer>(blueprintData.Entity);
 						foreach(var requirement in requirements)
 						{
 							requiredItemGUIDs.Add(requirement.PrefabGUID);
@@ -252,10 +266,10 @@ namespace VMods.ResourceStashWithdrawal
 				return;
 			}
 
-			int? stashCount = itemGUID == null ? null : Utils.GetStashItemCount(entityManager, teamChecker, character, itemGUID.Value, storedBlood);
+			int? stashCount = itemGUID == null ? null : Utils.GetStashItemCount(entityManager, character, itemGUID.Value, storedBlood);
 
-			var requiredItemStashCount = requiredItemGUIDs?.Select(x => Utils.GetStashItemCount(entityManager, teamChecker, character, x)).ToList();
-			var repairItemStashCount = repairItemGUIDs?.Select(x => Utils.GetStashItemCount(entityManager, teamChecker, character, x)).ToList();
+			var requiredItemStashCount = requiredItemGUIDs?.Select(x => Utils.GetStashItemCount(entityManager, character, x)).ToList();
+			var repairItemStashCount = repairItemGUIDs?.Select(x => Utils.GetStashItemCount(entityManager, character, x)).ToList();
 
 			if((stashCount.HasValue && stashCount.Value == -1) ||
 				(requiredItemStashCount != null && requiredItemStashCount.Contains(-1)) ||
@@ -288,7 +302,7 @@ namespace VMods.ResourceStashWithdrawal
 			{
 				yield return null;
 
-				if(tooltip == null || tooltip.Name == null || tooltip.Name.Text == null || !_tooltipInfo.ContainsKey(id))
+				if(tooltip == null || tooltip.SubText == null || tooltip.SubText.Text == null || !_tooltipInfo.ContainsKey(id))
 				{
 					break;
 				}
@@ -297,14 +311,14 @@ namespace VMods.ResourceStashWithdrawal
 
 				if(stashCount.HasValue)
 				{
-					tooltip.Name.Text.SetText($"{tooltip.Name._LocalizedString.Text} <size=14><color=white>(Stash: <color=yellow>{stashCount.Value}</color>)</color></size>");
+					tooltip.SubText.Text.SetText($"{tooltip.SubText._LocalizedString.Text} <size=14><color=white>(Stash: <color=yellow>{stashCount.Value}</color>)</color></size>");
 				}
 
 				if(requiredItemStashCount != null)
 				{
 					for(int i = 0; i < requiredItemStashCount.Count; i++)
 					{
-						var requiredItem = tooltip.RequiredItemsList[i];
+						var requiredItem = tooltip.RecipeRequiredItems.RequiredItemsList._items[i];
 						requiredItem.Name.Text.SetText($"{requiredItem.Name._LocalizedString.Text} <size=12><color=white>(Stash: <color=yellow>{requiredItemStashCount[i]}</color>)</color></size>");
 					}
 				}
@@ -313,7 +327,7 @@ namespace VMods.ResourceStashWithdrawal
 				{
 					for(int i = 0; i < repairItemStashCount.Count; i++)
 					{
-						var requiredItem = tooltip.RepairCostList[i];
+						var requiredItem = tooltip.ItemRepairCost.RepairCostList._items[i];
 						requiredItem.Name.Text.SetText($"{requiredItem.Name._LocalizedString.Text} <size=12><color=white>(Stash: <color=yellow>{repairItemStashCount[i]}</color>)</color></size>");
 					}
 				}
@@ -330,14 +344,14 @@ namespace VMods.ResourceStashWithdrawal
 			// Nested Method(s)
 			bool AllTextsContainStashInfo()
 			{
-				if(tooltip == null || tooltip.Name == null || tooltip.Name.Text == null || !tooltip.isActiveAndEnabled)
+				if(tooltip == null || tooltip.SubText == null || tooltip.SubText.Text == null || !tooltip.isActiveAndEnabled)
 				{
 					return true;
 				}
 
 				string endPhrase = "</size>";
 
-				if(!tooltip.Name.Text.text.EndsWith(endPhrase))
+				if(!tooltip.SubText.Text.text.EndsWith(endPhrase))
 				{
 					return false;
 				}

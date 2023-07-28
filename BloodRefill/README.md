@@ -1,17 +1,18 @@
 # ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - Gloomrot Update
 forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot.
+All credit goes to him for the original mod.
 
 # A server-side only mod that allows players to refill their blood pool.
 * When feed-killing an enemy, you'll be able to regain some blood.
 * The amount of blood regained is based on the level difference, blood type and blood quality of the killed enemy with V-Bloods refilling your blood pool for a much larger amount.
 * Specific blood types can also be disabled so no blood can be regained from them.
 * Theres also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
-* Lots of changes can be made in the config as you can see [<ins>**_Configurable Values_**<ins/>](#configurable-values)
+* Lots of changes can be made in the config as you can see in the section <ins>**_Configurable Values_**<ins/>
 
 ---
 
 ## Installation
-- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/)(optional) to work.
+- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and (Optionally) [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/) to work.
 - Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
@@ -137,7 +138,7 @@ BloodRefillSendRefillMessage = false
 ```
 ## Support me!
 * I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
-* 10$ Patreons get early access to releases. (I need some way to test mods before I release them to the public :D)
+* 5$ Patreons get early access to mod releases.
 
 
 ## Developer & credits

@@ -1,61 +1,88 @@
-﻿using BepInEx;
-using BepInEx.IL2CPP;
+﻿using System;
+using BepInEx;
 using HarmonyLib;
 using System.Reflection;
+using BepInEx.Unity.IL2CPP;
 using VMods.Shared;
-using Wetstone.API;
+using Bloodstone.API;
+using VMods.BloodRefill.Commands;
 
 namespace VMods.BloodRefill
 {
-	[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-	[BepInDependency("xyz.molenzwiebel.wetstone")]
-	[Reloadable]
-	public class Plugin : BasePlugin
-	{
-		#region Variables
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("gg.deca.Bloodstone")]
+    [BepInDependency("gg.deca.VampireCommandFramework", BepInDependency.DependencyFlags.SoftDependency)]
+    [Reloadable]
+    public class Plugin : BasePlugin, IRunOnInitialized
+    {
+        #region Variables
 
-		private Harmony _hooks;
+        private Harmony _hooks;
 
-		#endregion
+        #endregion
 
-		#region Public Methods
+        #region Public Methods
 
-		public sealed override void Load()
-		{
-			if(VWorld.IsClient)
-			{
-				Log.LogMessage($"{PluginInfo.PLUGIN_NAME} only needs to be installed server side.");
-				return;
-			}
-			Utils.Initialize(Log, PluginInfo.PLUGIN_NAME);
+        public sealed override void Load()
+        {
+            if (!VWorld.IsServer)
+            {
+                Log.LogMessage($"{MyPluginInfo.PLUGIN_NAME} only needs to be installed server side.");
+                return;
+            }
 
-			CommandSystemConfig.Initialize(Config);
-			BloodRefillConfig.Initialize(Config);
+            Utils.Initialize(Log, MyPluginInfo.PLUGIN_NAME);
 
-			CommandSystem.Initialize();
-			BloodRefillSystem.Initialize();
+            BloodRefillConfig.Initialize(Config);
+        }
 
-			_hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+        public void OnGameInitialized()
+        {
+            try
+            {
+                if (VWorld.IsClient)
+                {
+                    return;
+                }
 
-			Log.LogInfo($"Plugin {PluginInfo.PLUGIN_NAME} (v{PluginInfo.PLUGIN_VERSION}) is loaded!");
-		}
+                BloodRefillSystem.Initialize();
+                _hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
-		public sealed override bool Unload()
-		{
-			if(VWorld.IsClient)
-			{
-				return true;
-			}
-			VModStorage.SaveAll();
+                Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_NAME} (v{MyPluginInfo.PLUGIN_VERSION}) is loaded!");
 
-			_hooks?.UnpatchSelf();
-			BloodRefillSystem.Deinitialize();
-			CommandSystem.Deinitialize();
-			Config.Clear();
-			Utils.Deinitialize();
-			return true;
-		}
 
-		#endregion
-	}
+                Log.LogInfo("Looking if VCF is installed:");
+                if (Commands.VCFCompat.Commands.Enabled)
+                {
+                    Commands.VCFCompat.Commands.Register();
+                }
+                else
+                {
+                    Log.LogWarning("This mod has optional admin commands, you need to install VampireCommandFramework to use them.");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning("An error occured:" + e.Message);
+            }
+        }
+
+        public sealed override bool Unload()
+        {
+            if (VWorld.IsClient)
+            {
+                return true;
+            }
+
+            SaveSystem.SaveAll();
+
+            _hooks?.UnpatchSelf();
+            BloodRefillSystem.Deinitialize();
+            Config.Clear();
+            Utils.Deinitialize();
+            return true;
+        }
+
+        #endregion
+    }
 }

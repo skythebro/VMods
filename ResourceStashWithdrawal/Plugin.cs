@@ -1,50 +1,56 @@
-﻿using BepInEx;
+﻿using System;
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using System.Reflection;
+using BepInEx;
+using BepInEx.Unity.IL2CPP;
 using VMods.Shared;
-using Wetstone.API;
+using Bloodstone.API;
 
 namespace VMods.ResourceStashWithdrawal
 {
-	[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-	[BepInDependency("xyz.molenzwiebel.wetstone")]
-	[Reloadable]
-	public class Plugin : BasePlugin
-	{
-		#region Variables
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("gg.deca.Bloodstone")]
+    [Reloadable]
+    public class Plugin : BasePlugin, IRunOnInitialized
+    {
+        #region Variables
 
-		private Harmony _hooks;
+        private Harmony _hooks;
 
-		#endregion
+        #endregion
 
-		#region Public Methods
+        #region Public Methods
 
-		public sealed override void Load()
-		{
-			Utils.Initialize(Log, PluginInfo.PLUGIN_NAME);
-			ResourceStashWithdrawalConfig.Initialize(Config);
-			if(VWorld.IsClient)
-			{
-				UIClickHook.Reset();
-			}
+        public sealed override void Load()
+        {
+            Utils.Initialize(Log, MyPluginInfo.PLUGIN_NAME);
+            ResourceStashWithdrawalConfig.Initialize(Config);
+        }
 
-			ResourceStashWithdrawalSystem.Initialize();
+        public void OnGameInitialized()
+        {
+            if (VWorld.IsClient)
+            {
+                UIClickHook.Reset();
+            }
 
-			_hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            ResourceStashWithdrawalSystem.Initialize();
 
-			Log.LogInfo($"Plugin {PluginInfo.PLUGIN_NAME} (v{PluginInfo.PLUGIN_VERSION}) is loaded!");
-		}
+            _hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
-		public sealed override bool Unload()
-		{
-			_hooks?.UnpatchSelf();
-			ResourceStashWithdrawalSystem.Deinitialize();
-			Config.Clear();
-			Utils.Deinitialize();
-			return true;
-		}
+            Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_NAME} (v{MyPluginInfo.PLUGIN_VERSION}) is loaded!");
+        }
 
-		#endregion
-	}
+        public sealed override bool Unload()
+        {
+            _hooks?.UnpatchSelf();
+            ResourceStashWithdrawalSystem.Deinitialize();
+            Config.Clear();
+            Utils.Deinitialize();
+            return true;
+        }
+
+        #endregion
+    }
 }
