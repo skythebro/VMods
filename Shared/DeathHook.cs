@@ -1,39 +1,50 @@
-﻿using HarmonyLib;
+﻿using System;
+using Bloodstone.API;
+using HarmonyLib;
 using ProjectM;
 using Unity.Collections;
-using Wetstone.API;
+using Unity.Entities;
 
 namespace VMods.Shared
 {
-	[HarmonyPatch]
-	public static class DeathHook
-	{
-		#region Events
+    [HarmonyPatch]
+    public static class DeathHook
+    {
+        #region Events
 
-		public delegate void DeathEventHandler(DeathEvent deathEvent);
-		public static event DeathEventHandler DeathEvent;
-		private static void FireDeathEvent(DeathEvent deathEvent) => DeathEvent?.Invoke(deathEvent);
+        public delegate void DeathEventHandler(DeathEvent deathEvent);
 
-		#endregion
+        public static event DeathEventHandler DeathEvent;
+        private static void FireDeathEvent(DeathEvent deathEvent) => DeathEvent?.Invoke(deathEvent);
 
-		#region Public Methods
+        #endregion
 
-		[HarmonyPatch(typeof(DeathEventListenerSystem), nameof(DeathEventListenerSystem.OnUpdate))]
-		[HarmonyPostfix]
-		private static void OnUpdate(DeathEventListenerSystem __instance)
-		{
-			if(!VWorld.IsServer || __instance._DeathEventQuery == null)
-			{
-				return;
-			}
+        #region Public Methods
 
-			NativeArray<DeathEvent> deathEvents = __instance._DeathEventQuery.ToComponentDataArray<DeathEvent>(Allocator.Temp);
-			foreach(DeathEvent deathEvent in deathEvents)
-			{
-				FireDeathEvent(deathEvent);
-			}
-		}
+        [HarmonyPatch(typeof(DeathEventListenerSystem), nameof(DeathEventListenerSystem.OnUpdate))]
+        [HarmonyPostfix]
+        private static void OnUpdate(DeathEventListenerSystem __instance)
+        {
+            try
+            {
+                if (!VWorld.IsServer || __instance._DeathEventQuery.IsEmpty)
+                {
+                    return;
+                }
+                
+                NativeArray<DeathEvent> deathEvents =
+                    __instance._DeathEventQuery.ToComponentDataArray<DeathEvent>(Allocator.Temp);
+                foreach (DeathEvent deathEvent in deathEvents)
+                {
+                    FireDeathEvent(deathEvent);
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.Logger.LogError(e.Message);
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
