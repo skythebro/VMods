@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using static VMods.Shared.CommandAttribute;
+using VampireCommandFramework;
 
 namespace VMods.Shared
 {
 	public static class VModStorage
 	{
 		#region Consts
-
-		public const string StoragePath = "BepInEx/config/VMods/Storage";
-
+		
+		private static string ConfigStoragePath =  $"{BepInEx.Paths.ConfigPath}\\VMods\\Storage";
+		
 		private static readonly JsonSerializerOptions JsonOptions = new()
 		{
 			WriteIndented = false,
@@ -35,7 +35,7 @@ namespace VMods.Shared
 		{
 			try
 			{
-				File.WriteAllText(Path.Combine(StoragePath, filename), JsonSerializer.Serialize(data, JsonOptions));
+				File.WriteAllText(Path.Combine(ConfigStoragePath, filename), JsonSerializer.Serialize(data, JsonOptions));
 #if DEBUG
 				Utils.Logger.LogInfo($"{filename} has been saved.");
 #endif
@@ -50,11 +50,15 @@ namespace VMods.Shared
 		{
 			try
 			{
-				if(!Directory.Exists(StoragePath))
+				if(!Directory.Exists(ConfigStoragePath))
 				{
-					Directory.CreateDirectory(StoragePath);
+					Directory.CreateDirectory(ConfigStoragePath);
 				}
-				var fullPath = Path.Combine(StoragePath, filename);
+				var fullPath = Path.Combine(ConfigStoragePath, filename);
+#if DEBUG
+				Utils.Logger.LogMessage($"Loading {fullPath}");
+#endif			
+				
 				if(!File.Exists(fullPath))
 				{
 					return getDefaultValue();
@@ -73,11 +77,11 @@ namespace VMods.Shared
 
 		#region Private Methods
 
-		[Command("saveall", "saveall", "Saves all data of all VMod plugins", AdminLevel.Admin)]
-		private static void OnSaveAllCommand(Command command)
+		//[Command("saveall", "svall", "Saves all data of all VMod plugins", "true")]
+		private static void OnSaveAllCommand(ChatCommandContext command)
 		{
 			SaveAll();
-			command.VModCharacter.SendSystemMessage($"VMod Plugin '{Utils.PluginName}' saved successfully.");
+			command.Reply($"VMod Plugin '{Utils.PluginName}' saved successfully.");
 		}
 
 		#endregion
