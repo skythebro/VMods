@@ -2,7 +2,7 @@
 using ProjectM;
 using Unity.Collections;
 using Unity.Entities;
-using Wetstone.API;
+using Bloodstone.API;
 
 namespace VMods.Shared
 {
@@ -23,7 +23,7 @@ namespace VMods.Shared
 		[HarmonyPrefix]
 		private static void OnUpdate(BuffSystem_Spawn_Server __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -33,7 +33,7 @@ namespace VMods.Shared
 			var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				PrefabGUID buffGUID = entityManager.GetComponentData<PrefabGUID>(entity);
+				entityManager.TryGetComponentData<PrefabGUID>(entity, out var buffGUID);
 				FireProcessBuffEvent(entity, buffGUID);
 			}
 		}

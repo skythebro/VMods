@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using ProjectM;
+//using VMods.BloodRefill.Commands.VCFCompat;
 
 namespace VMods.Shared
 {
@@ -12,14 +13,14 @@ namespace VMods.Shared
 		[HarmonyPrefix]
 		private static void TriggerSave()
 		{
-			VModStorage.SaveAll();
+			//Commands.BloodRefillCommands.SaveAll();
 		}
 
 		[HarmonyPatch(typeof(ServerBootstrapSystem), nameof(ServerBootstrapSystem.OnDestroy))]
 		[HarmonyPrefix]
 		private static void OnDestroy()
 		{
-			VModStorage.SaveAll();
+			//Commands.BloodRefillCommands.SaveAll();
 		}
 
 		#endregion

@@ -16,7 +16,7 @@ namespace VMods.Shared
 
 		public static void Initialize(ConfigFile config)
 		{
-			CommandSystemEnabled = config.Bind(nameof(CommandSystemConfig), nameof(CommandSystemEnabled), true, "Enabled/disable the Commands system (for this specific mod).");
+			CommandSystemEnabled = config.Bind(nameof(CommandSystemConfig), nameof(CommandSystemEnabled), false, "Leave disabled for now because It interferes with community commands. Enabled/disable the Commands system (for this specific mod).");
 			CommandSystemPrefix = config.Bind(nameof(CommandSystemConfig), nameof(CommandSystemPrefix), "!", "The prefix that needs to be used to execute a command (for this specific mod).");
 			CommandSystemCommandCooldown = config.Bind(nameof(CommandSystemConfig), nameof(CommandSystemCommandCooldown), 5f, "The amount of seconds between two commands (for non-admins).");
 		}

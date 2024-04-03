@@ -1,8 +1,8 @@
-﻿using ProjectM;
+﻿using Bloodstone.API;
+using ProjectM;
 using ProjectM.Network;
 using Unity.Collections;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace VMods.Shared
 {
@@ -37,7 +37,7 @@ namespace VMods.Shared
 			Character = character;
 			FromCharacter = new FromCharacter()
 			{
-				User = character.UserEntity._Entity,
+				User = character.UserEntity,
 				Character = user.LocalCharacter._Entity,
 			};
 			AdminLevel = Utils.GetAdminLevel(FromCharacter.User, entityManager);
@@ -46,8 +46,10 @@ namespace VMods.Shared
 		public VModCharacter(FromCharacter fromCharacter, EntityManager? entityManager = null)
 		{
 			entityManager ??= Utils.CurrentWorld.EntityManager;
-			User = entityManager.Value.GetComponentData<User>(fromCharacter.User);
-			Character = entityManager.Value.GetComponentData<PlayerCharacter>(fromCharacter.Character);
+			entityManager.Value.TryGetComponentData<User>(fromCharacter.User, out var user);
+			User = user;
+			entityManager.Value.TryGetComponentData<PlayerCharacter>(fromCharacter.Character, out var character);
+			Character = character;
 			FromCharacter = fromCharacter;
 			AdminLevel = Utils.GetAdminLevel(FromCharacter.User, entityManager);
 		}
@@ -55,11 +57,13 @@ namespace VMods.Shared
 		public VModCharacter(Entity userEntity, Entity charEntity, EntityManager? entityManager = null)
 		{
 			entityManager ??= Utils.CurrentWorld.EntityManager;
-			User = entityManager.Value.GetComponentData<User>(userEntity);
-			Character = entityManager.Value.GetComponentData<PlayerCharacter>(charEntity);
+			entityManager.Value.TryGetComponentData<User>(userEntity, out var user);
+			User = user;
+			entityManager.Value.TryGetComponentData<PlayerCharacter>(charEntity, out var character);
+			Character = character;
 			FromCharacter = new FromCharacter()
 			{
-				User = Character.UserEntity._Entity,
+				User = Character.UserEntity,
 				Character = User.LocalCharacter._Entity,
 			};
 			AdminLevel = Utils.GetAdminLevel(FromCharacter.User, entityManager);
@@ -68,13 +72,15 @@ namespace VMods.Shared
 		public VModCharacter(Entity charEntity, EntityManager? entityManager = null)
 		{
 			entityManager ??= Utils.CurrentWorld.EntityManager;
-			Character = entityManager.Value.GetComponentData<PlayerCharacter>(charEntity);
+			entityManager.Value.TryGetComponentData<PlayerCharacter>(charEntity, out var character);
+			Character = character;
 			FromCharacter = new FromCharacter()
 			{
-				User = Character.UserEntity._Entity,
+				User = Character.UserEntity,
 				Character = charEntity,
 			};
-			User = entityManager.Value.GetComponentData<User>(FromCharacter.User);
+			entityManager.Value.TryGetComponentData<User>(FromCharacter.User, out var user);
+			User = user;
 			AdminLevel = Utils.GetAdminLevel(FromCharacter.User, entityManager);
 		}
 
@@ -84,7 +90,7 @@ namespace VMods.Shared
 
 		public static bool operator ==(VModCharacter left, VModCharacter right)
 		{
-			if(ReferenceEquals(left, right))
+			if(Equals(left, right))
 			{
 				return true;
 			}
@@ -99,19 +105,19 @@ namespace VMods.Shared
 			var users = entityManager.Value.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
 			foreach(var userEntity in users)
 			{
-				var userData = entityManager.Value.GetComponentData<User>(userEntity);
+				entityManager.Value.TryGetComponentData<User>(userEntity, out var userData);
 				if(userData.CharacterName.ToString() != charactername)
 				{
 					continue;
 				}
 
 				var characterEntity = userData.LocalCharacter._Entity;
-				if(!entityManager.Value.HasComponent<PlayerCharacter>(characterEntity))
+				var hasPlayerCharacter = entityManager.Value.TryGetComponentData<PlayerCharacter>(characterEntity, out var playerCharacter);
+				if(!hasPlayerCharacter)
 				{
 					continue;
 				}
-
-				var playerCharacter = entityManager.Value.GetComponentData<PlayerCharacter>(characterEntity);
+				
 				return new VModCharacter(userData, playerCharacter);
 			}
 			return null;

@@ -11,11 +11,13 @@ namespace VMods.Shared
 
 		private static readonly Dictionary<PrefabGUID, FactionEnum> PrefabGUIDToFactionEnumMapping = new()
 		{
-			[new PrefabGUID(-1632475814)] = FactionEnum.Ashfolk,
+			[new PrefabGUID(-1632475814)] = FactionEnum.Gloomrot,
 			[new PrefabGUID(-413163549)] = FactionEnum.Bandits,
 			[new PrefabGUID(1344481611)] = FactionEnum.Bear,
 			[new PrefabGUID(1094603131)] = FactionEnum.ChurchOfLum,
 			[new PrefabGUID(2395673)] = FactionEnum.ChurchOfLum | FactionEnum.Spot_ShapeshiftHuman,
+			[new PrefabGUID(671871002)] = FactionEnum.ChurchOfLum_Slaves,
+			[new PrefabGUID(877850148)] = FactionEnum.ChurchOfLum_Slaves_Rioters,
 			[new PrefabGUID(10678632)] = FactionEnum.Critters,
 			[new PrefabGUID(1522496317)] = FactionEnum.Cursed,
 			[new PrefabGUID(1513046884)] = FactionEnum.Elementals,
@@ -32,6 +34,7 @@ namespace VMods.Shared
 			[new PrefabGUID(929074293)] = FactionEnum.Undead,
 			[new PrefabGUID(2120169232)] = FactionEnum.VampireHunters,
 			[new PrefabGUID(-2024618997)] = FactionEnum.Werewolves,
+			[new PrefabGUID(62959306)] = FactionEnum.WerewolvesHuman,
 			[new PrefabGUID(-1671358863)] = FactionEnum.Wolves,
 			[new PrefabGUID(1977351396)] = FactionEnum.Prisoners,
 		};

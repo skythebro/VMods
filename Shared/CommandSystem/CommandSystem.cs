@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Wetstone.API;
-using Wetstone.Hooks;
+using Bloodstone.API;
+using Bloodstone.Hooks;
 using static VMods.Shared.CommandAttribute;
 
 namespace VMods.Shared
@@ -35,6 +35,8 @@ namespace VMods.Shared
 				return;
 			}
 
+			
+			
 			_commandReflectionMethods = Assembly.GetExecutingAssembly().GetTypes().SelectMany(x => x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Where(y => y.GetCustomAttributes<CommandAttribute>(false).Count() > 0)).Select(x => (x, x.GetCustomAttribute<CommandAttribute>(false))).ToList();
 
 			Chat.OnChatMessage += OnChatMessage;
@@ -104,8 +106,7 @@ namespace VMods.Shared
 				name = splitted[0][commandPrefix.Length..];
 				args = splitted.Skip(1).ToArray();
 			}
-			else
-			{
+			else {
 				name = message[commandPrefix.Length..];
 				args = new string[0];
 			}
@@ -141,10 +142,10 @@ namespace VMods.Shared
 				{
 					method.Invoke(command);
 				}
-				catch(Exception ex)
+				catch(Exception)
 				{
 					SendInvalidCommandMessage(command);
-					throw ex;
+					throw;
 				}
 				if(command.Used)
 				{
@@ -164,10 +165,10 @@ namespace VMods.Shared
 					{
 						method.Invoke(null, new[] { command });
 					}
-					catch(Exception ex)
+					catch(Exception)
 					{
 						SendInvalidCommandMessage(command);
-						throw ex;
+						throw;
 					}
 					if(command.Used)
 					{

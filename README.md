@@ -48,10 +48,6 @@ When a player is at a crafting or other workstation, he/she can click on the rec
   
 Note: Players without the client-side mod can still join and play the server, but won't be able to make use of this feature.
 
-## Support me!
-* I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
-* 5$ Patreons get early access to mod releases.
-
 ## Developer & credits
 <details>
 

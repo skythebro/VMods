@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
-using Wetstone.API;
-using AdminLevel = VMods.Shared.CommandAttribute.AdminLevel;
+using Bloodstone.API;
+//using AdminLevel = VMods.Shared.CommandAttribute.AdminLevel;
 
 namespace VMods.Shared
 {
@@ -61,7 +61,7 @@ namespace VMods.Shared
 			{
 				PruneHighestGearScores();
 
-				var user = entityManager.GetComponentData<User>(fromCharacter.User);
+				entityManager.TryGetComponentData<User>(fromCharacter.User, out var user);
 				if(_gearScoreData.TryGetValue(user.PlatformId, out var gearScoreData))
 				{
 					return Math.Max(currentGS, gearScoreData.HighestGearScore);
@@ -82,7 +82,7 @@ namespace VMods.Shared
 
 		public static float GetCurrentGearScore(Entity characterEntity, EntityManager entityManager)
 		{
-			var equipment = entityManager.GetComponentData<Equipment>(characterEntity);
+			entityManager.TryGetComponentData<Equipment>(characterEntity, out var equipment);
 			return equipment.ArmorLevel + equipment.WeaponLevel + equipment.SpellLevel;
 		}
 
@@ -113,7 +113,7 @@ namespace VMods.Shared
 			}
 
 			var entityManager = VWorld.Server.EntityManager;
-			var user = entityManager.GetComponentData<User>(fromCharacter.User);
+			entityManager.TryGetComponentData<User>(fromCharacter.User, out var user);
 			if(!_gearScoreData.TryGetValue(user.PlatformId, out var gearScoreData))
 			{
 				gearScoreData = new GearScoreData();
@@ -139,13 +139,13 @@ namespace VMods.Shared
 		private static void OnVampireDowned(Entity killer, Entity victim)
 		{
 			var entityManager = VWorld.Server.EntityManager;
-			var victimCharacter = entityManager.GetComponentData<PlayerCharacter>(victim);
-			var victumUserEntity = victimCharacter.UserEntity._Entity;
-			var victumUser = entityManager.GetComponentData<User>(victumUserEntity);
+			entityManager.TryGetComponentData<PlayerCharacter>(victim, out var victimCharacter);
+			var victumUserEntity = victimCharacter.UserEntity;
+			entityManager.TryGetComponentData<User>(victumUserEntity, out var victumUser);
 
 			_gearScoreData.Remove(victumUser.PlatformId);
 		}
-
+/*
 		[Command("highestgs,hgs,higs,highgs,highestgearscore", "highestgs [<player-name>]", "Tells you what the highest gear score is for the given player (or yourself when noplayername is given)", AdminLevel.Admin)]
 		private static void OnHighestGearScoreCommand(Command command)
 		{
@@ -166,7 +166,8 @@ namespace VMods.Shared
 				}
 			}
 		}
-
+		*/
+/*
 		[Command("clearhgs,resethgs,clearhighestgearscore,resethighestgearscore", "clearhgs [<player-name>]", "Removes the current Highest Gear Score record for the given player (or yourself when noplayername is given)", AdminLevel.Admin)]
 		private static void OnResetHighestGearScoreCommand(Command command)
 		{
@@ -180,7 +181,7 @@ namespace VMods.Shared
 				command.VModCharacter.SendSystemMessage($"[{Utils.PluginName}] Removed the Highest Gear Score record for <color=#ffffff>{searchUsername}</color>.");
 			}
 		}
-
+*/
 		#endregion
 
 		#region Nested

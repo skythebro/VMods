@@ -1,8 +1,8 @@
-﻿using HarmonyLib;
+﻿using Bloodstone.API;
+using HarmonyLib;
 using ProjectM;
 using Unity.Collections;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace VMods.Shared
 {
@@ -27,7 +27,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void OnUpdate(VampireDownedServerEventSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -38,7 +38,8 @@ namespace VMods.Shared
 			foreach(var entity in eventsQuery)
 			{
 				VampireDownedServerEventSystem.TryFindRootOwner(entity, 1, entityManager, out var victim);
-				Entity source = entityManager.GetComponentData<VampireDownedBuff>(entity).Source;
+				entityManager.TryGetComponentData<VampireDownedBuff>(entity, out var sourceEntity);
+				Entity source = sourceEntity.Source;
 				VampireDownedServerEventSystem.TryFindRootOwner(source, 1, entityManager, out var killer);
 
 				if(killer.Equals(victim))
@@ -46,13 +47,16 @@ namespace VMods.Shared
 					continue;
 				}
 
-				if(entityManager.HasComponent<PlayerCharacter>(victim))
+				var hasVictimPlayerCharacter = entityManager.TryGetComponentData<PlayerCharacter>(victim, out _);
+				if(hasVictimPlayerCharacter)
 				{
-					if(entityManager.HasComponent<PlayerCharacter>(killer))
+					var hasKillerPlayerCharacter = entityManager.TryGetComponentData<PlayerCharacter>(killer, out _);
+					var hasKillerUnitLevel = entityManager.TryGetComponentData<UnitLevel>(killer, out _);
+					if(hasKillerPlayerCharacter)
 					{
 						FireVampireDownedByVampireEvent(killer, victim);
 					}
-					else if(entityManager.HasComponent<UnitLevel>(killer))
+					else if(hasKillerUnitLevel)
 					{
 						FireVampireDownedByMonsterEvent(killer, victim);
 					}

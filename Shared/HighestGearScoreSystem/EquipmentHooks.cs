@@ -3,7 +3,7 @@ using ProjectM;
 using ProjectM.Network;
 using System.Collections.Generic;
 using Unity.Collections;
-using Wetstone.API;
+using Bloodstone.API;
 
 namespace VMods.Shared
 {
@@ -24,7 +24,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void EquipItem(EquipItemSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -33,7 +33,8 @@ namespace VMods.Shared
 			var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+				
+				entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 				FireEquipmentChangedEvent(fromCharacter);
 			}
 		}
@@ -42,7 +43,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void EquipItemFromInventory(EquipItemFromInventorySystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__EquipItemFromInventoryJob_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__EquipItemFromInventoryJob_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -51,16 +52,16 @@ namespace VMods.Shared
 			var entities = __instance.__EquipItemFromInventoryJob_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+				entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 				FireEquipmentChangedEvent(fromCharacter);
 			}
 		}
 
-		[HarmonyPatch(typeof(UnequipItemSystem), nameof(UnequipItemSystem.OnUpdate))]
+		[HarmonyPatch(typeof(UnEquipItemSystem), nameof(UnEquipItemSystem.OnUpdate))]
 		[HarmonyPostfix]
-		private static void UnequipItem(UnequipItemSystem __instance)
+		private static void UnequipItem(UnEquipItemSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -69,7 +70,7 @@ namespace VMods.Shared
 			var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+				entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 				FireEquipmentChangedEvent(fromCharacter);
 			}
 		}
@@ -80,7 +81,7 @@ namespace VMods.Shared
 			private static void Prefix(MoveItemBetweenInventoriesSystem __instance, out List<FromCharacter> __state)
 			{
 				__state = new List<FromCharacter>();
-				if(!VWorld.IsServer || __instance._MoveItemBetweenInventoriesEventQuery == null)
+				if(!VWorld.IsServer || __instance._MoveItemBetweenInventoriesEventQuery.IsEmpty)
 				{
 					return;
 				}
@@ -89,7 +90,7 @@ namespace VMods.Shared
 				var entities = __instance._MoveItemBetweenInventoriesEventQuery.ToEntityArray(Allocator.Temp);
 				foreach(var entity in entities)
 				{
-					var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+					entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 					if(!__state.Contains(fromCharacter))
 					{
 						__state.Add(fromCharacter);
@@ -109,7 +110,7 @@ namespace VMods.Shared
 			private static void Prefix(MoveAllItemsBetweenInventoriesSystem __instance, out List<FromCharacter> __state)
 			{
 				__state = new List<FromCharacter>();
-				if(!VWorld.IsServer || __instance.__MoveAllItemsJob_entityQuery == null)
+				if(!VWorld.IsServer || __instance.__MoveAllItemsJob_entityQuery.IsEmpty)
 				{
 					return;
 				}
@@ -118,7 +119,7 @@ namespace VMods.Shared
 				var entities = __instance.__MoveAllItemsJob_entityQuery.ToEntityArray(Allocator.Temp);
 				foreach(var entity in entities)
 				{
-					var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+					entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 					if(!__state.Contains(fromCharacter))
 					{
 						__state.Add(fromCharacter);
@@ -136,7 +137,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void DropInventoryItem(DropInventoryItemSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__DropInventoryItemJob_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__DropInventoryItemJob_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -145,7 +146,7 @@ namespace VMods.Shared
 			var entities = __instance.__DropInventoryItemJob_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+				entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 				FireEquipmentChangedEvent(fromCharacter);
 			}
 		}
@@ -156,7 +157,7 @@ namespace VMods.Shared
 			private static void Prefix(DropItemSystem __instance, out List<FromCharacter> __state)
 			{
 				__state = new List<FromCharacter>();
-				if(!VWorld.IsServer || __instance.__DropEquippedItemJob_entityQuery == null || __instance.__DropEquippedItemJob_entityQuery == null)
+				if(!VWorld.IsServer || __instance.__DropEquippedItemJob_entityQuery.IsEmpty || __instance.__DropEquippedItemJob_entityQuery.IsEmpty)
 				{
 					return;
 				}
@@ -165,7 +166,7 @@ namespace VMods.Shared
 				var entities = __instance.__DropEquippedItemJob_entityQuery.ToEntityArray(Allocator.Temp);
 				foreach(var entity in entities)
 				{
-					var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+					entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 					if(!__state.Contains(fromCharacter))
 					{
 						__state.Add(fromCharacter);
@@ -175,7 +176,7 @@ namespace VMods.Shared
 				entities = __instance.__DropItemsJob_entityQuery.ToEntityArray(Allocator.Temp);
 				foreach(var entity in entities)
 				{
-					var fromCharacter = entityManager.GetComponentData<FromCharacter>(entity);
+					entityManager.TryGetComponentData<FromCharacter>(entity, out var fromCharacter);
 					if(!__state.Contains(fromCharacter))
 					{
 						__state.Add(fromCharacter);
@@ -193,7 +194,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void ItemPickup(ItemPickupSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery == null)
+			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
 			{
 				return;
 			}
@@ -202,13 +203,14 @@ namespace VMods.Shared
 			var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
-				var ownerData = entityManager.GetComponentData<EntityOwner>(entity);
+				
+				entityManager.TryGetComponentData<EntityOwner>(entity, out var ownerData);
 				var characterEntity = ownerData.Owner;
-				var playerCharacter = entityManager.GetComponentData<PlayerCharacter>(characterEntity);
+				entityManager.TryGetComponentData<PlayerCharacter>(characterEntity, out var playerCharacter);
 				FireEquipmentChangedEvent(new FromCharacter()
 				{
 					Character = characterEntity,
-					User = playerCharacter.UserEntity._Entity,
+					User = playerCharacter.UserEntity,
 				});
 			}
 		}
