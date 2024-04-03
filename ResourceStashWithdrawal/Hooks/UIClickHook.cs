@@ -66,6 +66,9 @@ namespace VMods.ResourceStashWithdrawal
                 __instance.GetComponent<RefinementstationRecipeItem>();
             WorkstationRecipeGridSelectionEntry workstationRecipeGridSelectionEntry =
                 __instance.GetComponent<WorkstationRecipeGridSelectionEntry>();
+            BuildMenu_StructureEntry buildMenuStructureEntry =
+                __instance.GetComponent<BuildMenu_StructureEntry>();
+            List<PrefabGUID> requiredItemGUIDs = null;
             if (refinementstationRecipeEntry != null)
             {
                 var refinementstationSubMenu = __instance.GetComponentInParent<RefinementstationSubMenu>();
@@ -247,6 +250,40 @@ namespace VMods.ResourceStashWithdrawal
                         UITooltipHook.OnPointerEnter(__instance, eventData);
                     }
                 }
+            }
+            else if(buildMenuStructureEntry != null)
+            {
+                if(gameDataSystem.BlueprintHashLookupMap.ContainsKey(buildMenuStructureEntry.PrefabGuid))
+				{
+					var blueprintData = gameDataSystem.BlueprintHashLookupMap[buildMenuStructureEntry.PrefabGuid];
+					var hasBlueprintRequirementBuffer = entityManager.TryGetBuffer<BlueprintRequirementBuffer>(blueprintData.Entity, out var requirements);
+					
+					if(hasBlueprintRequirementBuffer)
+					{
+						requiredItemGUIDs = new();
+						foreach(var requirement in requirements)
+						{
+                            int requiredAmount = (int)Math.Ceiling(requirement.Amount);
+                            var itemGUID = requirement.PrefabGUID;
+#if DEBUG
+                            var name = Utils.GetItemName(itemGUID, gameDataSystem, entityManager, prefabLookupMap);
+                            Utils.Logger.LogMessage($"Withdraw Recipe item: {requiredAmount}x {name} ({itemGUID})");
+#endif
+                            if (requiredAmount > 0)
+                            {
+                                ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                                {
+                                    ItemGUIDHash = itemGUID.GuidHash,
+                                    Amount = requiredAmount,
+                                });
+                            }
+                        }
+                        // Force update the tooltip
+                        UITooltipHook.OnPointerEnter(__instance, eventData);
+					}
+				}
+                
+                return;
             }
             else
             {
