@@ -1,11 +1,12 @@
 # ![img.png](https://i.imgur.com/GD9JnrZ.png) Resource Stash Withdrawal - Gloomrot Update
 forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot.
 All credit goes to him for the original mod.
+Credit for it working in the build menu goes to [diegosilva98](https://github.com/diegosilva98)
 
 # A server & client side mod that allows players to withdraw items for a recipe directly from their stash.
 * This mod also adds the stash count of items to the tooltips (given that you're in/near your base)
 * When a player is at a crafting or other workstation, they can click on the recipe with their middle-mouse button to withdraw the missing item(s) directly from their stash.
-* (The withdraw the full amount, CTRL+Middle Mouse Button can be used)
+* (To withdraw the full amount, CTRL+Middle Mouse Button can be used)
 ---
 
 ## Installation
@@ -25,16 +26,13 @@ All credit goes to him for the original mod.
 ResourceStashWithdrawalEnabled = true
 ```
 
-## Support me!
-* I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
-* 5$ Patreons get early access to mod releases.
-
 ## Developer & credits
 <details>
 
 ### V rising modding discord [Discord](https://discord.gg/XY5bNtNm4w)
 ### Current Developer
 - `skythebro/skyKDG` - Also known as realsky on discord
+- - `diegosilva98` - helped with getting the mod to work in the build menu as well
 
 ### Original Creator & Developer
 - [WhiteFang5](https://github.com/WhiteFang5/VMods)
