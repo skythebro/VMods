@@ -15,7 +15,7 @@ VMods is a selection of Mods for V-Rising made using a common/shared codebase th
 * Install [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/)
 * (Locally hosted games only) Install [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/)
 * Extract the Vmods._mod-name_.dll
-* Move the desired mod(s) to the `[VRising (server) folder]/BepInEx/WetstonePlugins/`
+* Move the desired mod(s) to the `[VRising (server) folder]/BepInEx/Plugins/`
 * Launch the server (or game) to auto-generate the config files
 * Edit the configs as you desire (found in `[VRising (server) folder]/BepInEx/config/`)
 
