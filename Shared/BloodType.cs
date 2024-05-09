@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Bloodstone.API;
 using ProjectM.UI;
+using Stunlock.Core;
 
 namespace VMods.Shared
 {
@@ -73,7 +74,7 @@ namespace VMods.Shared
                 Quality = quality,
                 Amount = addAmount,
             };
-            VWorld.Server.GetExistingSystem<DebugEventsSystem>().ConsumeBloodEvent(user.Index, ref ConsumeBloodEvent);
+            VWorld.Server.GetExistingSystemManaged<DebugEventsSystem>().ConsumeBloodEvent(user.Index, ref ConsumeBloodEvent);
         }
 
         #endregion

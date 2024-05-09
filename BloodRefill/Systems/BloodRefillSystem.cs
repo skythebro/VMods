@@ -96,7 +96,7 @@ namespace VMods.BloodRefill
                     return;
                 }
 
-                if (!bloodConsumeSource.UnitBloodType.ParseBloodType(out BloodType bloodType))
+                if (!bloodConsumeSource.UnitBloodType._Value.ParseBloodType(out BloodType bloodType))
                 {
                     // Invalid/unknown blood type
                     return;
@@ -283,8 +283,7 @@ namespace VMods.BloodRefill
                             float actualBloodGained = newTotalBlood - playerBlood.Value;
                             float refillAmountInLitres = (int)(actualBloodGained * 10f) / 100f;
                             float newTotalBloodInLitres = (int)Math.Round(newTotalBlood) / 10f;
-                            //VNetwork.SendToClient(); // cannot do this until bloodstone creator accepts pull request to fix server to client serialization
-                            //Utils.SendMessage(userEntity, $"+{refillAmountInLitres}L Blood ({newTotalBloodInLitres}L)", ServerChatMessageType.Lore);
+                            Utils.SendMessage(userEntity, $"+{refillAmountInLitres}L Blood ({newTotalBloodInLitres}L)", ServerChatMessageType.Lore);
                         }
 
                         playerBloodType.ApplyToPlayer(user, playerBlood.Quality, roundedRefillAmount);

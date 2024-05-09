@@ -27,13 +27,13 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void OnUpdate(VampireDownedServerEventSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
+			if(!VWorld.IsServer || __instance.__query_1174204813_0.IsEmpty)
 			{
 				return;
 			}
 
 			EntityManager entityManager = __instance.EntityManager;
-			var eventsQuery = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
+			var eventsQuery = __instance.__query_1174204813_0.ToEntityArray(Allocator.Temp);
 
 			foreach(var entity in eventsQuery)
 			{
