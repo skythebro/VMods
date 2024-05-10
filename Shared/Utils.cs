@@ -190,7 +190,6 @@ namespace VMods.Shared
             // });
             //
             // em.SetComponentData(entity, ev);
-            
             ServerChatUtils.SendSystemMessageToClient(em, user, message);
         }
 

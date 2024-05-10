@@ -29,7 +29,7 @@ ResourceStashWithdrawalEnabled = true
 ## Developer & credits
 <details>
 
-### V rising modding discord [Discord](https://discord.gg/XY5bNtNm4w)
+### V rising modding [discord](https://discord.gg/XY5bNtNm4w)
 ### Current Developer
 - `skythebro/skyKDG` - Also known as realsky on discord
 - `diegosilva98` - helped with getting the mod to work in the build menu as well

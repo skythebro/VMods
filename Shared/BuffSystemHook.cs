@@ -25,7 +25,7 @@ namespace VMods.Shared
 		private static void OnUpdate(BuffSystem_Spawn_Server __instance)
 		{
 			//if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
-			if(!VWorld.IsServer || __instance._Query.IsEmpty)
+			if(!VWorld.IsServer || __instance.__query_401358634_0.IsEmpty)
 			{
 				return;
 			}
@@ -33,7 +33,7 @@ namespace VMods.Shared
 			var entityManager = __instance.EntityManager;
 
 			//var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
-			var entities = __instance._Query.ToEntityArray(Allocator.Temp);
+			var entities = __instance.__query_401358634_0.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{
 				entityManager.TryGetComponentData<PrefabGUID>(entity, out var buffGUID);

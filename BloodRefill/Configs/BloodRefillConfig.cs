@@ -16,7 +16,10 @@ namespace VMods.BloodRefill
         public static ConfigEntry<bool> BloodRefillMutantEnabled { get; private set; }
 
         public static ConfigEntry<bool> BloodRefillVBloodEnabled { get; private set; }
-
+        public static ConfigEntry<bool> BloodRefillDraculinEnabled { get; private set; }
+        public static ConfigEntry<bool> BloodRefillGateBossEnabled { get; private set; }
+        public static ConfigEntry<bool> BloodRefillDraculaTheImmortalEnabled { get; private set; }
+        
         public static ConfigEntry<bool> BloodRefillRequiresFeeding { get; private set; }
 
         public static ConfigEntry<bool> BloodRefillRequiresSameBloodType { get; private set; }
@@ -76,6 +79,12 @@ namespace VMods.BloodRefill
                 true, "When enabled, mutant blood can be refilled.");
             BloodRefillVBloodEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillVBloodEnabled), true,
                 "When enabled, V-blood can be refilled.");
+            BloodRefillDraculinEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillDraculinEnabled), true,
+                "When enabled, Draculin blood can be refilled.");
+            BloodRefillGateBossEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillGateBossEnabled), true,
+                "When enabled, GateBoss blood can be refilled.");
+            BloodRefillDraculaTheImmortalEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillDraculaTheImmortalEnabled), true,
+                "When enabled, DraculaTheImmortal blood can be refilled.");
 
             BloodRefillExcludeVBloodFromSameBloodTypeCheck = config.Bind(nameof(BloodRefillConfig),
                 nameof(BloodRefillExcludeVBloodFromSameBloodTypeCheck), true,
@@ -114,7 +123,7 @@ namespace VMods.BloodRefill
 
             BloodRefillSendRefillMessage = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillSendRefillMessage),
                 false,
-                "NOT WORKING: (this will not work until bloodstone gets updated to fix server to client serialization) When enabled, a refill chat message is sent to the player.");
+                "When enabled, a refill chat message is sent to the player.");
         }
 
         #endregion
