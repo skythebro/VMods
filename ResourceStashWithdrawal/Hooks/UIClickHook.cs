@@ -51,7 +51,7 @@ namespace VMods.ResourceStashWithdrawal
             var gameDataSystem = client.GetExistingSystemManaged<GameDataSystem>();
             var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
             var prefabCollectionSystem = client.GetExistingSystemManaged<PrefabCollectionSystem>();
-            var prefabLookupMap = prefabCollectionSystem.PrefabLookupMap;
+            var prefabLookupMap = prefabCollectionSystem._PrefabLookupMap;
             var userCharEntity = Entity.Null;
             foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
                          .ToEntityArray(Allocator.Temp))

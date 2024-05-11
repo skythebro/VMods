@@ -82,19 +82,25 @@ namespace VMods.BloodRefill
 #if DEBUG
 
                 Utils.Logger.LogMessage($"DE.Killer = {deathEvent.Killer.Index}");
+                Utils.Logger.LogMessage($"DE.Killer = {deathEvent.Killer.ToString()}");
                 Utils.Logger.LogMessage($"DE.Died = {deathEvent.Died.Index}");
+                Utils.Logger.LogMessage($"DE.Died = {deathEvent.Died.ToString()}");
                 Utils.Logger.LogMessage($"DE.Source = {deathEvent.Source.Index}");
+                Utils.Logger.LogMessage($"DE.Source = {deathEvent.Source.ToString()}");
 #endif
 
                 Entity userEntity = playerCharacter.UserEntity;
                 entityManager.TryGetComponentData<User>(userEntity, out var user);
 
-                bool killedByFeeding = deathEvent.Killer.Index == deathEvent.Source.Index;
+                //bool killedByFeeding = deathEvent.Killer.Index == deathEvent.Source.Index && deathEvent.Source.Index != 0;
+                // hopefully this is a good fix for the above line not working
+                bool killedByFeeding = deathEvent.Source.Index == 0 || deathEvent.Killer.Index == deathEvent.Source.Index;
 
                 if (!playerBlood.BloodType.ParseBloodType(out BloodType playerBloodType))
                 {
 #if DEBUG
                     Utils.Logger.LogMessage($"Player Blood Type: {playerBlood.BloodType._Value}");
+                    Utils.Logger.LogMessage($"Invalid or unknown blood type");
 #endif
                     // Invalid/unknown blood type
                     return;
@@ -182,6 +188,9 @@ namespace VMods.BloodRefill
                 // Allow V-Bloods to skip the 'killed by feeding' check, otherwise additional feeders won't get a refill.
                 if (!isVBlood && BloodRefillConfig.BloodRefillRequiresFeeding.Value && !killedByFeeding)
                 {
+#if DEBUG
+                    Utils.Logger.LogMessage($"Killed by feeding: {killedByFeeding}");
+#endif
                     // Can only gain blood when killing the enemy while feeding (i.e. abort the feed)
                     return;
                 }
@@ -192,9 +201,17 @@ namespace VMods.BloodRefill
 
                 if (BloodRefillConfig.BloodRefillRequiresSameBloodType.Value && !isSameBloodType)
                 {
+#if DEBUG
+                    Utils.Logger.LogMessage($"Same Blood Type: {isSameBloodType}");
+#endif
                     // Can only gain blood when killing an enemy of the same blood type
                     return;
                 }
+                
+#if DEBUG
+                Utils.Logger.LogMessage($"Player Blood Type: {playerBloodType}");
+                Utils.Logger.LogMessage($"Enemy Blood Type: {bloodType}");
+#endif
 
                 float bloodTypeMultiplier =
                     isSameBloodType ? 1f : BloodRefillConfig.BloodRefillDifferentBloodTypeMultiplier.Value;
