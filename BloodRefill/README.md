@@ -1,5 +1,5 @@
 # ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - Gloomrot Update
-forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot.
+forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot, now also updated to 1.0.
 All credit goes to him for the original mod.
 
 # A server-side only mod that allows players to refill their blood pool.
@@ -13,7 +13,7 @@ All credit goes to him for the original mod.
 
 ## Installation
 - This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and (Optionally) [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/) to work.
-- Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
+- ~~Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!~~
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
 
@@ -81,6 +81,21 @@ BloodRefillMutantEnabled = true
 # Default value: true
 BloodRefillVBloodEnabled = true
 
+## When enabled, Draculin blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillDraculinEnabled = true
+
+## When enabled, GateBoss blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillGateBossEnabled = true
+
+## When enabled, DraculaTheImmortal blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillDraculaTheImmortalEnabled = true
+
 ## When enabled, V-blood is excluded from the 'same blood type' check (i.e. it's always considered to be 'the same blood type' as the player's blood type).
 # Setting type: Boolean
 # Default value: true
@@ -131,20 +146,16 @@ BloodRefillMultiplier = 0.5
 # Default value: 0.1
 BloodRefillDifferentBloodTypeMultiplier = 0.1
 
-## NOT WORKING: (this will not work until bloodstone gets updated to fix server to client serialization) When enabled, a refill chat message is sent to the player.
+## When enabled, a refill chat message is sent to the player.
 # Setting type: Boolean
 # Default value: false
 BloodRefillSendRefillMessage = false
 ```
-## Support me!
-* I have a Patreon now so please support me [Here](https://patreon.com/user?u=97347013) so I can mod as much as I can!
-* 5$ Patreons get early access to mod releases.
-
 
 ## Developer & credits
 <details>
 
-### V rising modding discord [Discord](https://discord.gg/XY5bNtNm4w)
+### V rising modding [discord](https://discord.gg/XY5bNtNm4w)
 ### Current Developer
 - `skythebro/skyKDG` - Also known as realsky on discord
 

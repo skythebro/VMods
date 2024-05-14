@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Bloodstone.API;
 using Il2CppInterop.Runtime;
+using Stunlock.Core;
 using Stunlock.Localization;
 
 namespace VMods.Shared
@@ -70,14 +71,17 @@ namespace VMods.Shared
 
         public static IEnumerable<Entity> GetAlliedStashes(EntityManager entityManager, Entity character)
         {
-            ComponentDataFromEntity<Team> getTeam = entityManager.GetComponentDataFromEntity<Team>();
-
+            // GetComponentDataFromEntity no longer exists
+            //ComponentDataFromEntity<Team> getTeam = entityManager.GetComponentDataFromEntity<Team>();
+            
             foreach (var stash in GetStashEntities(entityManager))
             {
                 if (entityManager.HasComponent<Team>(stash) && entityManager.HasComponent<Team>(character))
                 {
-                    var stashTeam = getTeam[stash];
-                    var characterTeam = getTeam[character];
+                    // var stashTeam = getTeam[stash];
+                    // var characterTeam = getTeam[character];
+                    entityManager.TryGetComponentData<Team>(stash, out var stashTeam);
+                    entityManager.TryGetComponentData<Team>(character, out var characterTeam);
                     if (Team.IsAllies(stashTeam, characterTeam))
                     {
                         yield return stash;
@@ -132,8 +136,8 @@ namespace VMods.Shared
             }
 
             entityManager ??= CurrentWorld.EntityManager;
-            gameDataSystem ??= CurrentWorld.GetExistingSystem<GameDataSystem>();
-            prefabLookupMap ??= CurrentWorld.GetExistingSystem<PrefabCollectionSystem>().PrefabLookupMap;
+            gameDataSystem ??= CurrentWorld.GetExistingSystemManaged<GameDataSystem>();
+            prefabLookupMap ??= CurrentWorld.GetExistingSystemManaged<PrefabCollectionSystem>().PrefabLookupMap;
             try
             {
                 var itemName = GameplayHelper.TryGetItemName(gameDataSystem, entityManager.Value, prefabLookupMap.Value,
@@ -159,33 +163,34 @@ namespace VMods.Shared
 
             EntityManager em = VWorld.Server.EntityManager;
             em.TryGetComponentData<User>(userEntity, out var user);
-            int index = user.Index;
-            em.TryGetComponentData<NetworkId>(userEntity, out var id);
+            // int index = user.Index;
+            // em.TryGetComponentData<NetworkId>(userEntity, out var id);
 
-            Entity entity = em.CreateEntity(
-                ComponentType.ReadOnly<NetworkEventType>(),
-                ComponentType.ReadOnly<SendEventToUser>(),
-                ComponentType.ReadOnly<ChatMessageServerEvent>()
-            );
-
-            ChatMessageServerEvent ev = new()
-            {
-                MessageText = message,
-                MessageType = messageType,
-                FromUser = id,
-                TimeUTC = DateTime.Now.ToFileTimeUtc()
-            };
-            
-            entity.WithComponentDataVmodAOT((ref SendEventToUser us) => us.UserIndex = index);
-
-            entity.WithComponentDataVmodAOT((ref NetworkEventType ev) =>
-            {
-                ev.EventId = NetworkEvents.EventId_ChatMessageServerEvent;
-                ev.IsAdminEvent = false;
-                ev.IsDebugEvent = false;
-            });
-
-            em.SetComponentData(entity, ev);
+            // Entity entity = em.CreateEntity(
+            //     ComponentType.ReadOnly<NetworkEventType>(),
+            //     ComponentType.ReadOnly<SendEventToUser>(),
+            //     ComponentType.ReadOnly<ChatMessageServerEvent>()
+            // );
+            //
+            // ChatMessageServerEvent ev = new()
+            // {
+            //     MessageText = message,
+            //     MessageType = messageType,
+            //     FromUser = id,
+            //     TimeUTC = DateTime.Now.ToFileTimeUtc()
+            // };
+            //
+            // entity.WithComponentDataVmodAOT((ref SendEventToUser us) => us.UserIndex = index);
+            //
+            // entity.WithComponentDataVmodAOT((ref NetworkEventType ev) =>
+            // {
+            //     ev.EventId = NetworkEvents.EventId_ChatMessageServerEvent;
+            //     ev.IsAdminEvent = false;
+            //     ev.IsDebugEvent = false;
+            // });
+            //
+            // em.SetComponentData(entity, ev);
+            ServerChatUtils.SendSystemMessageToClient(em, user, message);
         }
 
         public static bool TryGetPrefabGUIDForItemName(GameDataSystem gameDataSystem, LocalizationKey itemName,
@@ -209,11 +214,10 @@ namespace VMods.Shared
             return false;
         }
 
-        public static bool TryGiveItem(EntityManager entityManager, NativeHashMap<PrefabGUID, ItemData>? itemDataMap,
+        public static bool TryGiveItem(EntityManager entityManager, NativeParallelHashMap<PrefabGUID, ItemData>? itemDataMap,
             Entity recipient, PrefabGUID itemType, int amount, out int remainingitems, bool dropRemainder = false)
         {
-            
-            itemDataMap ??= CurrentWorld.GetExistingSystem<GameDataSystem>().ItemHashLookupMap;
+            itemDataMap ??= CurrentWorld.GetExistingSystemManaged<GameDataSystem>().ItemHashLookupMap;
             var itemSettings = AddItemSettings.Create(entityManager, itemDataMap.Value, false, default, default, false, false, dropRemainder);
             AddItemResponse response = InventoryUtilitiesServer.TryAddItem(itemSettings, recipient, itemType, amount);
             remainingitems = response.RemainingAmount;
@@ -231,7 +235,7 @@ namespace VMods.Shared
 
         public static void ApplyBuff(FromCharacter fromCharacter, PrefabGUID buffGUID)
         {
-            var des = VWorld.Server.GetExistingSystem<DebugEventsSystem>();
+            var des = VWorld.Server.GetExistingSystemManaged<DebugEventsSystem>();
             var buffEvent = new ApplyBuffDebugEvent()
             {
                 BuffPrefabGUID = buffGUID

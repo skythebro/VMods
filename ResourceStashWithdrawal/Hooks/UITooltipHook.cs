@@ -14,6 +14,7 @@ using UnityEngine.EventSystems;
 using VMods.Shared;
 using Bloodstone.API;
 using ProjectM.Network;
+using Stunlock.Core;
 using Unity.Collections;
 
 namespace VMods.ResourceStashWithdrawal
@@ -105,8 +106,8 @@ namespace VMods.ResourceStashWithdrawal
 				return;
 			}
 			var entityManager = client.EntityManager;
-			var gameDataSystem = client.GetExistingSystem<GameDataSystem>();
-			var clientGameManager = client.GetExistingSystem<ClientScriptMapper>()?._ClientGameManager;
+			var gameDataSystem = client.GetExistingSystemManaged<GameDataSystem>();
+			var clientGameManager = client.GetExistingSystemManaged<ClientScriptMapper>()?._ClientGameManager;
 			Entity userCharEntity = Entity.Null;
 			foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp))
 			{
@@ -164,7 +165,7 @@ namespace VMods.ResourceStashWithdrawal
 					var hasDurability = entityManager.TryGetComponentData<Durability>(itemGridSelectionEntry.SyncedEntity, out var durability);
 					if(hasDurability)
 					{
-						var prefabCollectionSystem = client.GetExistingSystem<PrefabCollectionSystem>();
+						var prefabCollectionSystem = client.GetExistingSystemManaged<PrefabCollectionSystem>();
 						var prefabLookupMap = prefabCollectionSystem.PrefabLookupMap;
 
 						repairItemGUIDs = new();

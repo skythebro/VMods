@@ -55,7 +55,7 @@ namespace VMods.BloodRefill
             {
                 EntityManager entityManager = VWorld.Server.EntityManager;
                 // Make sure a player killed an appropriate monster
-                var hasPLayerCharacter = entityManager.TryGetComponentData<PlayerCharacter>(deathEvent.Killer, out _);
+                var hasPlayerCharacter = entityManager.TryGetComponentData<PlayerCharacter>(deathEvent.Killer, out _);
                 var hasEquipment = entityManager.TryGetComponentData<Equipment>(deathEvent.Killer, out _);
                 var hasBlood = entityManager.TryGetComponentData<Blood>(deathEvent.Killer, out _);
                 var hasMovement = entityManager.TryGetComponentData<Movement>(deathEvent.Died, out _);
@@ -63,7 +63,7 @@ namespace VMods.BloodRefill
                 var hasBloodConsumeSource =
                     entityManager.TryGetComponentData<BloodConsumeSource>(deathEvent.Died, out _);
                 if (!BloodRefillConfig.BloodRefillEnabled.Value ||
-                    !hasPLayerCharacter ||
+                    !hasPlayerCharacter ||
                     !hasEquipment ||
                     !hasBlood ||
                     !hasMovement ||
@@ -80,24 +80,38 @@ namespace VMods.BloodRefill
                 entityManager.TryGetComponentData<BloodConsumeSource>(deathEvent.Died, out var bloodConsumeSource);
 
 #if DEBUG
-            Utils.Logger.LogMessage($"DE.Killer = {deathEvent.Killer.Index}");
-            Utils.Logger.LogMessage($"DE.Died = {deathEvent.Died.Index}");
-            Utils.Logger.LogMessage($"DE.Source = {deathEvent.Source.Index}");
+
+                Utils.Logger.LogMessage($"DE.Killer = {deathEvent.Killer.Index}");
+                Utils.Logger.LogMessage($"DE.Killer = {deathEvent.Killer.ToString()}");
+                Utils.Logger.LogMessage($"DE.Died = {deathEvent.Died.Index}");
+                Utils.Logger.LogMessage($"DE.Died = {deathEvent.Died.ToString()}");
+                Utils.Logger.LogMessage($"DE.Source = {deathEvent.Source.Index}");
+                Utils.Logger.LogMessage($"DE.Source = {deathEvent.Source.ToString()}");
 #endif
 
                 Entity userEntity = playerCharacter.UserEntity;
                 entityManager.TryGetComponentData<User>(userEntity, out var user);
 
-                bool killedByFeeding = deathEvent.Killer.Index == deathEvent.Source.Index;
+                //bool killedByFeeding = deathEvent.Killer.Index == deathEvent.Source.Index && deathEvent.Source.Index != 0;
+                // hopefully this is a good fix for the above line not working
+                bool killedByFeeding = deathEvent.Source.Index == 0 || deathEvent.Killer.Index == deathEvent.Source.Index;
 
                 if (!playerBlood.BloodType.ParseBloodType(out BloodType playerBloodType))
                 {
+#if DEBUG
+                    Utils.Logger.LogMessage($"Player Blood Type: {playerBlood.BloodType._Value}");
+                    Utils.Logger.LogMessage($"Invalid or unknown blood type");
+#endif
                     // Invalid/unknown blood type
                     return;
                 }
 
-                if (!bloodConsumeSource.UnitBloodType.ParseBloodType(out BloodType bloodType))
+                if (!bloodConsumeSource.UnitBloodType._Value.ParseBloodType(out BloodType bloodType))
                 {
+#if DEBUG
+                    Utils.Logger.LogMessage($"Enemy Blood Type: {bloodConsumeSource.UnitBloodType._Value}");
+#endif
+
                     // Invalid/unknown blood type
                     return;
                 }
@@ -150,6 +164,25 @@ namespace VMods.BloodRefill
                     return;
                 }
 
+                if (!BloodRefillConfig.BloodRefillDraculinEnabled.Value && bloodType == BloodType.Draculin)
+                {
+                    // Draculins don't refill blood
+                    return;
+                }
+
+                if (!BloodRefillConfig.BloodRefillGateBossEnabled.Value && bloodType == BloodType.GateBoss)
+                {
+                    // GateBoss's don't refill blood
+                    return;
+                }
+
+                if (!BloodRefillConfig.BloodRefillDraculaTheImmortalEnabled.Value &&
+                    bloodType == BloodType.DraculaTheImmortal)
+                {
+                    // DraculaTheImmortal's don't refill blood
+                    return;
+                }
+
                 bool isVBlood = bloodType == BloodType.VBlood;
 
                 // Allow V-Bloods to skip the 'killed by feeding' check, otherwise additional feeders won't get a refill.
@@ -165,9 +198,17 @@ namespace VMods.BloodRefill
 
                 if (BloodRefillConfig.BloodRefillRequiresSameBloodType.Value && !isSameBloodType)
                 {
+#if DEBUG
+                    Utils.Logger.LogMessage($"Same Blood Type: {isSameBloodType}");
+#endif
                     // Can only gain blood when killing an enemy of the same blood type
                     return;
                 }
+                
+#if DEBUG
+                Utils.Logger.LogMessage($"Player Blood Type: {playerBloodType}");
+                Utils.Logger.LogMessage($"Enemy Blood Type: {bloodType}");
+#endif
 
                 float bloodTypeMultiplier =
                     isSameBloodType ? 1f : BloodRefillConfig.BloodRefillDifferentBloodTypeMultiplier.Value;
@@ -178,12 +219,12 @@ namespace VMods.BloodRefill
 
 
 #if DEBUG
-            Utils.Logger.LogMessage($"Player Blood Quality: {playerBlood.Quality}");
-            Utils.Logger.LogMessage($"Player Blood Value: {playerBlood.Value}");
-            Utils.Logger.LogMessage($"Player Level: {playerLevel}");
+                Utils.Logger.LogMessage($"Player Blood Quality: {playerBlood.Quality}");
+                Utils.Logger.LogMessage($"Player Blood Value: {playerBlood.Value}");
+                Utils.Logger.LogMessage($"Player Level: {playerLevel}");
 
-            Utils.Logger.LogMessage($"Enemy Blood Quality: {bloodConsumeSource.BloodQuality}");
-            Utils.Logger.LogMessage($"Enemy Level {enemyLevel}");
+                Utils.Logger.LogMessage($"Enemy Blood Quality: {bloodConsumeSource.BloodQuality}");
+                Utils.Logger.LogMessage($"Enemy Level {enemyLevel}");
 #endif
 
                 float levelRatio = enemyLevel / playerLevel;
@@ -199,11 +240,11 @@ namespace VMods.BloodRefill
 
 
 #if DEBUG
-            Utils.Logger.LogMessage($"Lvl Ratio: {levelRatio}");
-            Utils.Logger.LogMessage($"Quality Ratio: {qualityRatio}");
-            Utils.Logger.LogMessage($"Refill Ratio: {refillRatio}");
-            Utils.Logger.LogMessage($"Blood Type Multiplier: {bloodTypeMultiplier}");
-            Utils.Logger.LogMessage($"Refill Amount: {refillAmount}");
+                Utils.Logger.LogMessage($"Lvl Ratio: {levelRatio}");
+                Utils.Logger.LogMessage($"Quality Ratio: {qualityRatio}");
+                Utils.Logger.LogMessage($"Refill Ratio: {refillRatio}");
+                Utils.Logger.LogMessage($"Blood Type Multiplier: {bloodTypeMultiplier}");
+                Utils.Logger.LogMessage($"Refill Amount: {refillAmount}");
 #endif
 
                 if (BloodRefillConfig.BloodRefillRandomRefill.Value)
@@ -211,7 +252,7 @@ namespace VMods.BloodRefill
                     refillAmount = Random.RandomRange(1f, refillAmount);
 
 #if DEBUG
-                Utils.Logger.LogMessage($"Refill Roll: {refillAmount}");
+                    Utils.Logger.LogMessage($"Refill Roll: {refillAmount}");
 #endif
                 }
 
@@ -226,6 +267,10 @@ namespace VMods.BloodRefill
                                 : // Enemy refills blood but not if the player is above BloodRefillBloodCutoffThreshold % of blood quality
                                 if (playerBlood.Quality > BloodRefillConfig.BloodRefillBloodCutoffThreshold.Value)
                                 {
+#if DEBUG
+                                    Utils.Logger.LogMessage($"Blood Quality: {playerBlood.Quality}");
+                                    Utils.Logger.LogMessage($"Blood Cutoff Threshold: {BloodRefillConfig.BloodRefillBloodCutoffThreshold.Value}");
+#endif
                                     // no blood if you have more than the threshold.
                                     return;
                                 }
@@ -273,7 +318,7 @@ namespace VMods.BloodRefill
                     if (roundedRefillAmount > 0)
                     {
 #if DEBUG
-                    Utils.Logger.LogMessage($"New Blood Amount: {playerBlood.Value + roundedRefillAmount}");
+                        Utils.Logger.LogMessage($"New Blood Amount: {playerBlood.Value + roundedRefillAmount}");
 #endif
 
                         if (sendMessage)
@@ -283,8 +328,8 @@ namespace VMods.BloodRefill
                             float actualBloodGained = newTotalBlood - playerBlood.Value;
                             float refillAmountInLitres = (int)(actualBloodGained * 10f) / 100f;
                             float newTotalBloodInLitres = (int)Math.Round(newTotalBlood) / 10f;
-                            //VNetwork.SendToClient(); // cannot do this until bloodstone creator accepts pull request to fix server to client serialization
-                            //Utils.SendMessage(userEntity, $"+{refillAmountInLitres}L Blood ({newTotalBloodInLitres}L)", ServerChatMessageType.Lore);
+                            Utils.SendMessage(userEntity, $"+{refillAmountInLitres}L Blood ({newTotalBloodInLitres}L)",
+                                ServerChatMessageType.Lore);
                         }
 
                         playerBloodType.ApplyToPlayer(user, playerBlood.Quality, roundedRefillAmount);
@@ -294,7 +339,7 @@ namespace VMods.BloodRefill
 
                 if (sendMessage)
                 {
-                    //Utils.SendMessage(userEntity, $"No blood gained from the enemy.", ServerChatMessageType.Lore);
+                    Utils.SendMessage(userEntity, $"No blood gained from the enemy.", ServerChatMessageType.Lore);
                 }
             }
             catch (Exception e)

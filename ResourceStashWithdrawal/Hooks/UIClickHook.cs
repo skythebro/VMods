@@ -9,6 +9,7 @@ using VMods.Shared;
 using Bloodstone.API;
 using Il2CppSystem.Collections.Generic;
 using ProjectM.Network;
+using Stunlock.Core;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -47,10 +48,10 @@ namespace VMods.ResourceStashWithdrawal
 
             var client = VWorld.Client;
             var entityManager = client.EntityManager;
-            var gameDataSystem = client.GetExistingSystem<GameDataSystem>();
+            var gameDataSystem = client.GetExistingSystemManaged<GameDataSystem>();
             var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
-            var prefabCollectionSystem = client.GetExistingSystem<PrefabCollectionSystem>();
-            var prefabLookupMap = prefabCollectionSystem.PrefabLookupMap;
+            var prefabCollectionSystem = client.GetExistingSystemManaged<PrefabCollectionSystem>();
+            var prefabLookupMap = prefabCollectionSystem._PrefabLookupMap;
             var userCharEntity = Entity.Null;
             foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
                          .ToEntityArray(Allocator.Temp))

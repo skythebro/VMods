@@ -1,6 +1,7 @@
 ﻿using Bloodstone.API;
 using ProjectM;
 using ProjectM.Network;
+using Stunlock.Core;
 using Unity.Collections;
 using Unity.Entities;
 

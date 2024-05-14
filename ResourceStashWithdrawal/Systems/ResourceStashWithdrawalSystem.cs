@@ -2,6 +2,7 @@
 using ProjectM.Network;
 using System;
 using Bloodstone.API;
+using Stunlock.Core;
 using Unity.Entities;
 using VMods.Shared;
 
@@ -32,9 +33,9 @@ namespace VMods.ResourceStashWithdrawal
             }
 
             var server = VWorld.Server;
-            var gameDataSystem = server.GetExistingSystem<GameDataSystem>();
+            var gameDataSystem = server.GetExistingSystemManaged<GameDataSystem>();
             var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
-            var prefabCollectionSystem = server.GetExistingSystem<PrefabCollectionSystem>();
+            var prefabCollectionSystem = server.GetExistingSystemManaged<PrefabCollectionSystem>();
             var prefabLookupMap = prefabCollectionSystem.PrefabLookupMap;
             var entityManager = server.EntityManager;
 
@@ -81,7 +82,7 @@ namespace VMods.ResourceStashWithdrawal
                     }
 
                     InventoryUtilitiesServer.CreateInventoryChangedEvent(entityManager, fromCharacter.Character,
-                        stashItem.ItemType, stashItem.Amount, InventoryChangedEventType.Moved);
+                        stashItem.ItemType, stashItem.Amount, stashItem.ItemEntity._Entity ,InventoryChangedEventType.Moved);
                     remainingAmount -= transferAmount;
                     if (remainingAmount <= 0)
                     {

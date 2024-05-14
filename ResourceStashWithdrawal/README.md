@@ -1,5 +1,5 @@
 # ![img.png](https://i.imgur.com/GD9JnrZ.png) Resource Stash Withdrawal - Gloomrot Update
-forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot.
+forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot, now also updated to 1.0.
 All credit goes to him for the original mod.
 Credit for it working in the build menu goes to [diegosilva98](https://github.com/diegosilva98)
 
@@ -29,10 +29,10 @@ ResourceStashWithdrawalEnabled = true
 ## Developer & credits
 <details>
 
-### V rising modding discord [Discord](https://discord.gg/XY5bNtNm4w)
+### V rising modding [discord](https://discord.gg/XY5bNtNm4w)
 ### Current Developer
 - `skythebro/skyKDG` - Also known as realsky on discord
-- - `diegosilva98` - helped with getting the mod to work in the build menu as well
+- `diegosilva98` - helped with getting the mod to work in the build menu as well
 
 ### Original Creator & Developer
 - [WhiteFang5](https://github.com/WhiteFang5/VMods)

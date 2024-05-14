@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stunlock.Core;
 
 namespace VMods.Shared
 {
 	public static class FactionEnumExtensions
 	{
 		#region Consts
-
+		
 		private static readonly Dictionary<PrefabGUID, FactionEnum> PrefabGUIDToFactionEnumMapping = new()
 		{
 			[new PrefabGUID(-1632475814)] = FactionEnum.Gloomrot,
@@ -37,6 +38,11 @@ namespace VMods.Shared
 			[new PrefabGUID(62959306)] = FactionEnum.WerewolvesHuman,
 			[new PrefabGUID(-1671358863)] = FactionEnum.Wolves,
 			[new PrefabGUID(1977351396)] = FactionEnum.Prisoners,
+			[new PrefabGUID(-210606557)] = FactionEnum.Mutants,
+			[new PrefabGUID(2146780972)] = FactionEnum.PlayerMutant,
+			[new PrefabGUID(-772044125)] = FactionEnum.Legion,
+			[new PrefabGUID(-733057474)] = FactionEnum.Spiders_Shapeshift,
+
 		};
 
 		#endregion
