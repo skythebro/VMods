@@ -14,7 +14,7 @@
     <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.7" />
-    <PackageReference Include="VRising.Bloodstone" Version="0.2.0" />
+    <PackageReference Include="VRising.Bloodstone" Version="0.2.1" />
     <PackageReference Include="VRising.Unhollowed.Client" Version="1.0.0.792660001" />
     <PackageReference Include="VRising.VampireCommandFramework" Version="0.8.4" />
   </ItemGroup>
