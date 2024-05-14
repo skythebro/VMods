@@ -188,9 +188,6 @@ namespace VMods.BloodRefill
                 // Allow V-Bloods to skip the 'killed by feeding' check, otherwise additional feeders won't get a refill.
                 if (!isVBlood && BloodRefillConfig.BloodRefillRequiresFeeding.Value && !killedByFeeding)
                 {
-#if DEBUG
-                    Utils.Logger.LogMessage($"Killed by feeding: {killedByFeeding}");
-#endif
                     // Can only gain blood when killing the enemy while feeding (i.e. abort the feed)
                     return;
                 }
