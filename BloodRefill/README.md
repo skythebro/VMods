@@ -13,7 +13,7 @@ All credit goes to him for the original mod.
 
 ## Installation
 - This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and (Optionally) [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/) to work.
-- Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
+- ~~Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!~~
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
 
@@ -80,6 +80,21 @@ BloodRefillMutantEnabled = true
 # Setting type: Boolean
 # Default value: true
 BloodRefillVBloodEnabled = true
+
+## When enabled, Draculin blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillDraculinEnabled = true
+
+## When enabled, GateBoss blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillGateBossEnabled = true
+
+## When enabled, DraculaTheImmortal blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillDraculaTheImmortalEnabled = true
 
 ## When enabled, V-blood is excluded from the 'same blood type' check (i.e. it's always considered to be 'the same blood type' as the player's blood type).
 # Setting type: Boolean
