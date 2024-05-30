@@ -1,4 +1,4 @@
-# ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - Gloomrot Update
+# ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - 1.0 update
 forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot, now also updated to 1.0.
 All credit goes to him for the original mod.
 
@@ -8,20 +8,19 @@ All credit goes to him for the original mod.
 * Specific blood types can also be disabled so no blood can be regained from them.
 * Theres also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
 * Lots of changes can be made in the config as you can see in the section <ins>**_Configurable Values_**<ins/>
+* Be sure to configure the mod to your liking!
 
 ---
 
 ## Installation
-- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and (Optionally) [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/) to work.
-- ~~Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!~~
+- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/)
+- Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
 
 ---
 
 ## Configurable Values
-- This mod for now has one command and that is to save the _**BloodRefill.json**_ file `.bloodrefill(blrf) saveall(svall)` this file stores bloodrefill data.
-- The mod already automatically does this with every auto save and on server shutdown/start so there's no real necessity to use this command.
 ```ini
 
 [BloodRefillConfig]

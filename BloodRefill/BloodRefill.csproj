@@ -15,6 +15,7 @@
     <Compile Include="..\Shared\DeathHook.cs" Link="Shared\DeathHook.cs" />
     <Compile Include="..\Shared\Utils.cs" Link="Shared\Utils.cs" />
     <Compile Include="..\Shared\VModsVExtensionsOverride.cs" Link="Shared\VModsVExtensionsOverride.cs" />
+    <Compile Remove="Commands\Commands.cs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -23,9 +24,10 @@
     <PackageReference Include="System.Text.Json" Version="6.0.7" />
     <PackageReference Include="VRising.Bloodstone" Version="0.2.1" />
     <PackageReference Include="VRising.Unhollowed.Client" Version="1.0.0.792660001" />
-    <PackageReference Include="VRising.VampireCommandFramework" Version="0.8.4" />
+    <PackageReference Include="VRising.VampireCommandFramework" Version="0.9.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Commands\" />
     <Folder Include="Shared\" />
   </ItemGroup>
 </Project>

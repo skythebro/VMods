@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using VMods.Shared;
 using Bloodstone.API;
 using Il2CppSystem.Collections.Generic;
+using ProjectM.Gameplay.Systems;
 using ProjectM.Network;
 using Stunlock.Core;
 using Unity.Collections;
@@ -26,6 +27,10 @@ namespace VMods.ResourceStashWithdrawal
 
         #region Public Methods
 
+        // changes to make it temporarily work with the new system
+        public static Dictionary<ulong, Dictionary<int, int>> itemsToWithdraw =
+            new Dictionary<ulong, Dictionary<int, int>>();
+
         public static void Reset()
         {
             _lastResourceRequest = DateTime.UtcNow;
@@ -42,6 +47,7 @@ namespace VMods.ResourceStashWithdrawal
                 return;
             }
 
+
             _lastResourceRequest = DateTime.UtcNow;
 
             bool withdrawFullAmount = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
@@ -53,11 +59,13 @@ namespace VMods.ResourceStashWithdrawal
             var prefabCollectionSystem = client.GetExistingSystemManaged<PrefabCollectionSystem>();
             var prefabLookupMap = prefabCollectionSystem._PrefabLookupMap;
             var userCharEntity = Entity.Null;
+            var userPlatformId = ulong.MinValue;
             foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
                          .ToEntityArray(Allocator.Temp))
             {
                 entityManager.TryGetComponentData<User>(UsersEntity, out var userComponent);
                 userCharEntity = userComponent.LocalCharacter._Entity;
+                userPlatformId = userComponent.PlatformId;
             }
 
 
@@ -143,12 +151,18 @@ namespace VMods.ResourceStashWithdrawal
                             Utils.Logger.LogMessage(
                                 $"Withdraw Recipe item: {requiredAmount}x {name} ({output.Guid.GuidHash})");
 #endif
-                            ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                            if (!itemsToWithdraw.ContainsKey(userPlatformId))
                             {
-                                ItemGUIDHash = output.Guid.GuidHash,
-                                Amount = requiredAmount,
-                            });
-                            
+                                itemsToWithdraw[userPlatformId] = new Dictionary<int, int>();
+                            }
+
+                            itemsToWithdraw[userPlatformId][output.Guid.GuidHash] = requiredAmount;
+                            // ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                            // {
+                            //     ItemGUIDHash = output.Guid.GuidHash,
+                            //     Amount = requiredAmount,
+                            // });
+
                             // Force update the tooltip
                             UITooltipHook.OnPointerEnter(__instance, eventData);
                             return;
@@ -239,11 +253,16 @@ namespace VMods.ResourceStashWithdrawal
 
                             if (requiredAmount > 0)
                             {
-                                ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                                if (!itemsToWithdraw.ContainsKey(userPlatformId))
                                 {
-                                    ItemGUIDHash = itemGUID.GuidHash,
-                                    Amount = requiredAmount,
-                                });
+                                    itemsToWithdraw[userPlatformId] = new Dictionary<int, int>();
+                                }
+                                itemsToWithdraw[userPlatformId][itemGUID.GuidHash] = requiredAmount;
+                                // ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                                // {
+                                //     ItemGUIDHash = itemGUID.GuidHash,
+                                //     Amount = requiredAmount,
+                                // });
                             }
                         }
 
@@ -252,18 +271,20 @@ namespace VMods.ResourceStashWithdrawal
                     }
                 }
             }
-            else if(buildMenuStructureEntry != null)
+            else if (buildMenuStructureEntry != null)
             {
-                if(gameDataSystem.BlueprintHashLookupMap.ContainsKey(buildMenuStructureEntry.PrefabGuid))
-				{
-					var blueprintData = gameDataSystem.BlueprintHashLookupMap[buildMenuStructureEntry.PrefabGuid];
-					var hasBlueprintRequirementBuffer = entityManager.TryGetBuffer<BlueprintRequirementBuffer>(blueprintData.Entity, out var requirements);
-					
-					if(hasBlueprintRequirementBuffer)
-					{
-						requiredItemGUIDs = new();
-						foreach(var requirement in requirements)
-						{
+                if (gameDataSystem.BlueprintHashLookupMap.ContainsKey(buildMenuStructureEntry.PrefabGuid))
+                {
+                    var blueprintData = gameDataSystem.BlueprintHashLookupMap[buildMenuStructureEntry.PrefabGuid];
+                    var hasBlueprintRequirementBuffer =
+                        entityManager.TryGetBuffer<BlueprintRequirementBuffer>(blueprintData.Entity,
+                            out var requirements);
+
+                    if (hasBlueprintRequirementBuffer)
+                    {
+                        requiredItemGUIDs = new();
+                        foreach (var requirement in requirements)
+                        {
                             int requiredAmount = (int)Math.Ceiling(requirement.Amount);
                             var itemGUID = requirement.PrefabGUID;
 #if DEBUG
@@ -272,18 +293,24 @@ namespace VMods.ResourceStashWithdrawal
 #endif
                             if (requiredAmount > 0)
                             {
-                                ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                                if (!itemsToWithdraw.ContainsKey(userPlatformId))
                                 {
-                                    ItemGUIDHash = itemGUID.GuidHash,
-                                    Amount = requiredAmount,
-                                });
+                                    itemsToWithdraw[userPlatformId] = new Dictionary<int, int>();
+                                }
+                                itemsToWithdraw[userPlatformId][itemGUID.GuidHash] = requiredAmount;
+                                // ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                                // {
+                                //     ItemGUIDHash = itemGUID.GuidHash,
+                                //     Amount = requiredAmount,
+                                // });
                             }
                         }
+
                         // Force update the tooltip
                         UITooltipHook.OnPointerEnter(__instance, eventData);
-					}
-				}
-                
+                    }
+                }
+
                 return;
             }
             else
@@ -335,14 +362,27 @@ namespace VMods.ResourceStashWithdrawal
 
                 if (requiredAmount > 0)
                 {
-                    ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                    if (!itemsToWithdraw.ContainsKey(userPlatformId))
                     {
-                        ItemGUIDHash = requirement.Guid.GuidHash,
-                        Amount = requiredAmount,
-                    });
+                        itemsToWithdraw[userPlatformId] = new Dictionary<int, int>();
+                    }
+
+                    itemsToWithdraw[userPlatformId][requirement.Guid.GuidHash] = requiredAmount;
+                    // ResourceStashWithDrawalRequester.StartTask(new ResourceStashWithdrawalRequest()
+                    // {
+                    //     ItemGUIDHash = requirement.Guid.GuidHash,
+                    //     Amount = requiredAmount,
+                    // });
                 }
             }
+            var command = new WithdrawItemsCommand
+            {
+                PlatformId = userPlatformId,
+                ItemsToWithdraw = UIClickHook.itemsToWithdraw[userPlatformId]
+            };
+            VNetwork.SendToServer(command);
         }
+        
 
         #endregion
     }

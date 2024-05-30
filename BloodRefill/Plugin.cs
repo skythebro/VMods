@@ -11,7 +11,7 @@ namespace VMods.BloodRefill
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency("gg.deca.Bloodstone")]
-    [BepInDependency("gg.deca.VampireCommandFramework", BepInDependency.DependencyFlags.SoftDependency)]
+//    [BepInDependency("gg.deca.VampireCommandFramework", BepInDependency.DependencyFlags.SoftDependency)]
     [Reloadable]
     public class Plugin : BasePlugin, IRunOnInitialized
     {
@@ -51,15 +51,15 @@ namespace VMods.BloodRefill
                 Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_NAME} (v{MyPluginInfo.PLUGIN_VERSION}) is loaded!");
 
 
-                Log.LogInfo("Looking if VCF is installed:");
-                if (Commands.VCFCompat.Commands.Enabled)
-                {
-                    Commands.VCFCompat.Commands.Register();
-                }
-                else
-                {
-                    Log.LogWarning("This mod has optional admin commands, you need to install VampireCommandFramework to use them.");
-                }
+                // Log.LogInfo("Looking if VCF is installed:");
+                // if (Commands.VCFCompat.Commands.Enabled)
+                // {
+                //     Commands.VCFCompat.Commands.Register();
+                // }
+                // else
+                // {
+                //     Log.LogWarning("This mod has optional admin commands, you need to install VampireCommandFramework to use them.");
+                // }
             }
             catch (Exception e)
             {

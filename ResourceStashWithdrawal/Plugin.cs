@@ -11,6 +11,7 @@ namespace VMods.ResourceStashWithdrawal
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency("gg.deca.Bloodstone")]
+    [BepInDependency("gg.deca.VampireCommandFramework", BepInDependency.DependencyFlags.SoftDependency)]
     [Reloadable]
     public class Plugin : BasePlugin, IRunOnInitialized
     {
@@ -35,11 +36,25 @@ namespace VMods.ResourceStashWithdrawal
                 UIClickHook.Reset();
             }
 
-            ResourceStashWithdrawalSystem.Initialize();
+            //ResourceStashWithdrawalSystem.Initialize();
+            HandleWithdrawItemsCommandSystem.Initialize();
 
             _hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
             Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_NAME} (v{MyPluginInfo.PLUGIN_VERSION}) is loaded!");
+            if (!VWorld.IsClient)
+            {
+            Log.LogInfo("Trying to find VCF:");
+            
+                if (Commands.Commands.Enabled)
+                {
+                    Commands.Commands.Register();
+                }
+                else
+                {
+                    Log.LogError("This mod has commands, you need to install VampireCommandFramework to use them.");
+                }
+            }
         }
 
         public sealed override bool Unload()
