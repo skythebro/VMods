@@ -2,9 +2,8 @@
 using ProjectM.Network;
 using System;
 using System.Collections.Generic;
-using Bloodstone.API;
-using FMOD.Studio;
 using Unity.Entities;
+using VAMP;
 using VMods.BloodRefill.Commands;
 using VMods.Shared;
 using Random = UnityEngine.Random;
@@ -53,7 +52,7 @@ namespace VMods.BloodRefill
         {
             try
             {
-                EntityManager entityManager = VWorld.Server.EntityManager;
+                EntityManager entityManager = Core.Server.EntityManager;
                 // Make sure a player killed an appropriate monster
                 var hasPlayerCharacter = entityManager.TryGetComponentData<PlayerCharacter>(deathEvent.Killer, out _);
                 var hasEquipment = entityManager.TryGetComponentData<Equipment>(deathEvent.Killer, out _);
@@ -180,6 +179,13 @@ namespace VMods.BloodRefill
                     bloodType == BloodType.DraculaTheImmortal)
                 {
                     // DraculaTheImmortal's don't refill blood
+                    return;
+                }
+
+                if (!BloodRefillConfig.BloodRefillCorruptionEnabled.Value &&
+                    bloodType == BloodType.Corruption)
+                {
+                    // Corruption's don't refill blood
                     return;
                 }
 
@@ -332,7 +338,7 @@ namespace VMods.BloodRefill
                                 ServerChatMessageType.Lore);
                         }
 
-                        playerBloodType.ApplyToPlayer(user, playerBlood.Quality, roundedRefillAmount);
+                        playerBloodType.ApplyToPlayer(userEntity, playerBlood.Quality, playerBlood.SecondaryBlood, roundedRefillAmount, BloodRefillConfig.BloodRefillKeepSecondaryBloodBuffs.Value);
                         return;
                     }
                 }

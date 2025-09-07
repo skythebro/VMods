@@ -2,7 +2,6 @@
 using ProjectM;
 using Unity.Collections;
 using Unity.Entities;
-using Bloodstone.API;
 using Stunlock.Core;
 
 namespace VMods.Shared
@@ -24,15 +23,13 @@ namespace VMods.Shared
 		[HarmonyPrefix]
 		private static void OnUpdate(BuffSystem_Spawn_Server __instance)
 		{
-			//if(!VWorld.IsServer || __instance.__OnUpdate_LambdaJob0_entityQuery.IsEmpty)
-			if(!VWorld.IsServer || __instance.__query_401358634_0.IsEmpty)
+			if(!Utils.IsServer || __instance.__query_401358634_0.IsEmpty)
 			{
 				return;
 			}
 
 			var entityManager = __instance.EntityManager;
 
-			//var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 			var entities = __instance.__query_401358634_0.ToEntityArray(Allocator.Temp);
 			foreach(var entity in entities)
 			{

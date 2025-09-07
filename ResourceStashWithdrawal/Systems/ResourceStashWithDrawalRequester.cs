@@ -1,6 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Bloodstone.API;
+using VMods.Shared;
 
 namespace VMods.ResourceStashWithdrawal
 {
@@ -13,38 +14,52 @@ namespace VMods.ResourceStashWithdrawal
 
         public static void StartTask(ResourceStashWithdrawalRequest request)
         {
-            lock (requests)
+            try
             {
-                requests.Enqueue(request);
-
-                if (!running)
+                lock (requests)
                 {
-                    running = true;
-                    RunActionsAsync();
+                    requests.Enqueue(request);
+
+                    if (!running)
+                    {
+                        running = true;
+                        RunActionsAsync();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Utils.Logger.LogError($"Error while trying to start a task: {e.Message} Stacktrace: {e.StackTrace}");
             }
         }
 
         private static async void RunActionsAsync()
         {
-            while (requests.Count > 0)
+            try
             {
-                ResourceStashWithdrawalRequest nextRequest;
-
-                lock (requests)
+                while (requests.Count > 0)
                 {
-                    nextRequest = requests.Dequeue();
+                    ResourceStashWithdrawalRequest nextRequest;
+
+                    lock (requests)
+                    {
+                        nextRequest = requests.Dequeue();
+                    }
+
+                    // fix this line
+                    // VNetwork.SendToServerStruct(nextRequest);
+
+
+                    // Add a delay cuz otherwise the server will get flooded with requests, I could run coroutine but this works too
+                    await Task.Delay(frameDelay);
                 }
 
-                VNetwork.SendToServerStruct(nextRequest);
-                
-                
-                // Add a delay cuz otherwise the server will get flooded with requests, I could run coroutine but this works too
-                await Task.Delay(frameDelay);
+                running = false;
             }
-
-            running = false;
+            catch (Exception e)
+            {
+                Utils.Logger.LogError($"Error while trying to run a task async: {e.Message} Stacktrace: {e.StackTrace}");
+            }
         }
-        
     }
 }

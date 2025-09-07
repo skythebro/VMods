@@ -7,6 +7,8 @@ namespace VMods.BloodRefill
         #region Properties
 
         public static ConfigEntry<bool> BloodRefillEnabled { get; private set; }
+        
+        public static ConfigEntry<bool> BloodRefillKeepSecondaryBloodBuffs { get; private set; }
         public static ConfigEntry<bool> BloodRefillCreatureEnabled { get; private set; }
         public static ConfigEntry<bool> BloodRefillWarriorEnabled { get; private set; }
         public static ConfigEntry<bool> BloodRefillRogueEnabled { get; private set; }
@@ -19,6 +21,8 @@ namespace VMods.BloodRefill
         public static ConfigEntry<bool> BloodRefillDraculinEnabled { get; private set; }
         public static ConfigEntry<bool> BloodRefillGateBossEnabled { get; private set; }
         public static ConfigEntry<bool> BloodRefillDraculaTheImmortalEnabled { get; private set; }
+        
+        public static ConfigEntry<bool> BloodRefillCorruptionEnabled { get; private set; }
         
         public static ConfigEntry<bool> BloodRefillRequiresFeeding { get; private set; }
 
@@ -53,6 +57,9 @@ namespace VMods.BloodRefill
         {
             BloodRefillEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillEnabled), true,
                 "Enabled/disable the blood refilling system.");
+            
+            BloodRefillKeepSecondaryBloodBuffs = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillKeepSecondaryBloodBuffs),
+                true, "When enabled, secondary blood buffs are kept when refilling blood.");
 
             BloodRefillRequiresFeeding = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillRequiresFeeding),
                 true, "When enabled, blood can only be refilled when feeding (i.e. when aborting the feed).");
@@ -85,7 +92,8 @@ namespace VMods.BloodRefill
                 "When enabled, GateBoss blood can be refilled.");
             BloodRefillDraculaTheImmortalEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillDraculaTheImmortalEnabled), true,
                 "When enabled, DraculaTheImmortal blood can be refilled.");
-
+            BloodRefillCorruptionEnabled = config.Bind(nameof(BloodRefillConfig), nameof(BloodRefillCorruptionEnabled), true,
+                "When enabled, Corruption blood can be refilled.");
             BloodRefillExcludeVBloodFromSameBloodTypeCheck = config.Bind(nameof(BloodRefillConfig),
                 nameof(BloodRefillExcludeVBloodFromSameBloodTypeCheck), true,
                 "When enabled, V-blood is excluded from the 'same blood type' check (i.e. it's always considered to be 'the same blood type' as the player's blood type).");

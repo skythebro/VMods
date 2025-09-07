@@ -12,7 +12,6 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using VMods.Shared;
-using Bloodstone.API;
 using ProjectM.Network;
 using Stunlock.Core;
 using Unity.Collections;
@@ -28,7 +27,7 @@ namespace VMods.ResourceStashWithdrawal
 		[HarmonyPostfix]
 		public static void OnPointerEnter(GridSelectionEntry __instance, PointerEventData eventData)
 		{
-			if(!VWorld.IsClient)
+			if(!Utils.IsClient)
 			{
 				return;
 			}
@@ -99,7 +98,7 @@ namespace VMods.ResourceStashWithdrawal
 				return;
 			}
 
-			var client = VWorld.Client;
+			var client = Utils.Client;
 			if(client.Systems.Count == 0)
 			{
 				// No systems -> No tooltip

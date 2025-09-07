@@ -1,9 +1,9 @@
 ﻿using ProjectM;
 using ProjectM.Network;
 using System;
-using Bloodstone.API;
 using Stunlock.Core;
 using Unity.Entities;
+using VAMP;
 using VMods.Shared;
 
 namespace VMods.ResourceStashWithdrawal
@@ -14,25 +14,32 @@ namespace VMods.ResourceStashWithdrawal
 
         public static void Initialize()
         {
-            VNetworkRegistry
-                .RegisterServerboundStruct<ResourceStashWithdrawalRequest>(OnResourceStashWithdrawalRequest);
+            try
+            {
+                // VNetworkRegistry
+                //     .RegisterServerboundStruct<ResourceStashWithdrawalRequest>(OnResourceStashWithdrawalRequest);
+            }
+            catch (Exception e)
+            {
+                Utils.Logger.LogError($"Error while trying initialize ResourceStashWithdrawalRequest as a RegisterServerboundStruct: {e.Message} Stacktrace: {e.StackTrace}");
+            }
         }
 
         public static void Deinitialize()
         {
-            VNetworkRegistry.UnregisterStruct<ResourceStashWithdrawalRequest>();
+            // VNetworkRegistry.UnregisterStruct<ResourceStashWithdrawalRequest>();
         }
 
         private static void OnResourceStashWithdrawalRequest(FromCharacter fromCharacter,
             ResourceStashWithdrawalRequest request)
         {
-            if (!VWorld.IsServer || fromCharacter.Character == Entity.Null)
+            if (!Utils.IsServer || fromCharacter.Character == Entity.Null)
             {
                 // This isn't running on a server, or a non-existing character made the request -> stop trying to move items
                 return;
             }
 
-            var server = VWorld.Server;
+            var server = Core.Server;
             var gameDataSystem = server.GetExistingSystemManaged<GameDataSystem>();
             var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
             var prefabCollectionSystem = server.GetExistingSystemManaged<PrefabCollectionSystem>();
@@ -82,7 +89,8 @@ namespace VMods.ResourceStashWithdrawal
                     }
 
                     InventoryUtilitiesServer.CreateInventoryChangedEvent(entityManager, fromCharacter.Character,
-                        stashItem.ItemType, stashItem.Amount, stashItem.ItemEntity._Entity ,InventoryChangedEventType.Moved);
+                        stashItem.ItemType, stashItem.Amount, stashItem.ItemEntity._Entity,
+                        InventoryChangedEventType.Moved);
                     remainingAmount -= transferAmount;
                     if (remainingAmount <= 0)
                     {

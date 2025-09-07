@@ -2,9 +2,11 @@
 using ProjectM.Network;
 using System;
 using System.Collections.Generic;
-using Bloodstone.API;
-using ProjectM.UI;
+using ProjectM.Shared;
 using Stunlock.Core;
+using Unity.Entities;
+using UnityEngine;
+using VAMP;
 
 namespace VMods.Shared
 {
@@ -32,13 +34,14 @@ namespace VMods.Shared
         DraculaTheImmortal = 2010023718, //(UnitBloodType) BloodType_DraculaTheImmortal
         Draculin = 1328126535, //(UnitBloodType) BloodType_Draculin
         GateBoss = 910644396, //(UnitBloodType) BloodType_GateBoss
+        Corruption = -1382693416, //(UnitBloodType) BloodType_Corruption
     }
 
     public static class BloodTypeExtensions
     {
         #region Consts
 
-        public static readonly Dictionary<BloodType, PrefabGUID> BloodTypeToPrefabGUIDMapping = new()
+        public static readonly Dictionary<BloodType, PrefabGUID> BloodTypeToPrefabGuidMapping = new()
         {
             [BloodType.Creature] = new PrefabGUID(1897056612), //CHAR_Forest_Deer
             [BloodType.Warrior] = new PrefabGUID(-1128238456), //CHAR_Bandit_Bomber
@@ -48,18 +51,19 @@ namespace VMods.Shared
             [BloodType.Worker] = new PrefabGUID(-1342764880), //CHAR_Farmlands_Farmer
             [BloodType.Mutant] = new PrefabGUID(572729167), //CHAR_Mutant_Wolf
             [BloodType.Draculin] = new PrefabGUID(-669027288), //CHAR_Legion_Guardian_DraculaMinion
+            [BloodType.Corruption] = new PrefabGUID(616274140), // CHAR_Corrupted_Wolf
+            [BloodType.DraculaTheImmortal] = new PrefabGUID(-327335305), //CHAR_Vampire_Dracula_VBlood
         };
 
         #endregion
 
         #region Public Methods
 
-        public static bool ParseBloodType(this PrefabGUID prefabGUID, out BloodType bloodType)
+        public static bool ParseBloodType(this PrefabGUID prefabGuid, out BloodType bloodType)
         {
-            int guidHash = prefabGUID.GuidHash;
+            int guidHash = prefabGuid.GuidHash;
             if (!Enum.IsDefined(typeof(BloodType), guidHash))
             {
-                
                 bloodType = BloodType.Frailed;
                 return false;
             }
@@ -68,39 +72,97 @@ namespace VMods.Shared
             return true;
         }
 
-        public static BloodType? ToBloodType(this PrefabGUID prefabGUID)
+        public static BloodType? ToBloodType(this PrefabGUID prefabGuid)
         {
-            int guidHash = prefabGUID.GuidHash;
+            int guidHash = prefabGuid.GuidHash;
             if (!Enum.IsDefined(typeof(BloodType), guidHash))
             {
 #if DEBUG
-                Utils.Logger.LogError($"Failed to convert PrefabGUID '{prefabGUID}' to BloodType.");
+                Utils.Logger?.LogError($"Failed to convert PrefabGUID '{prefabGuid}' to BloodType.");
 #endif
                 return null;
             }
 #if DEBUG
-            Utils.Logger.LogMessage($"Converted PrefabGUID '{prefabGUID}' to BloodType '{(BloodType)guidHash}'.");
+            Utils.Logger?.LogInfo($"Converted PrefabGUID '{prefabGuid}' to BloodType '{(BloodType)guidHash}'.");
 #endif
 
             return (BloodType)guidHash;
         }
 
-        public static PrefabGUID ToPrefabGUID(this BloodType bloodType) => BloodTypeToPrefabGUIDMapping[bloodType];
+        public static PrefabGUID ToPrefabGuid(this BloodType bloodType) => BloodTypeToPrefabGuidMapping[bloodType];
 
-        public static void ApplyToPlayer(this BloodType bloodType, User user, float quality, int addAmount)
+        public static void ApplyToPlayer(this BloodType bloodType, Entity userEntity, float quality,
+            SecondaryBloodData secondaryBloodData, int addAmount, bool keepSecondaryBuffs)
         {
-            ConsumeBloodDebugEvent ConsumeBloodEvent = new()
+            var server = Utils.CurrentWorld;
+            var em = server.EntityManager;
+
+            if (!em.TryGetComponentData<User>(userEntity, out var user))
             {
-                Source = bloodType.ToPrefabGUID(),
-                Quality = quality,
-                Amount = addAmount,
-            };
-            VWorld.Server.GetExistingSystemManaged<DebugEventsSystem>().ConsumeBloodEvent(user.Index, ref ConsumeBloodEvent);
+                Utils.Logger?.LogError($"ApplyToPlayer: userEntity {userEntity} has no User component.");
+                return;
+            }
+
+            var charEntity = user.LocalCharacter.GetEntityOnServer();
+            if (!em.Exists(charEntity))
+            {
+                Utils.Logger?.LogError(
+                    $"ApplyToPlayer: Character entity {charEntity} does not exist for user {user.Index}.");
+                return;
+            }
+
+            if (!(quality > 0f && quality <= 100f))
+            {
+                Utils.Logger?.LogError($"ApplyToPlayer: Primary quality {quality} out of range (0,100].");
+                return;
+            }
+
 #if DEBUG
-            Utils.Logger.LogMessage($"Applied blood type '{bloodType}' to player '{user.Index}' with quality '{quality}' and amount '{addAmount}'.");
+            Utils.Logger?.LogInfo(
+                $"ApplyToPlayer: user.Index={user.Index}, charEntity={charEntity}, quality={quality}, amount={addAmount}, keepSecondary={keepSecondaryBuffs}");
+#endif
+
+            // ConsumeBloodAdminEvent consumeEvent = keepSecondaryBuffs
+            //     ? new ConsumeBloodAdminEvent
+            //     {
+            //         PrimaryType = bloodType.ToPrefabGuid(),
+            //         PrimaryQuality = quality,
+            //         SecondaryType = secondaryBloodData.Type,
+            //         SecondaryQuality = secondaryBloodData.Quality,
+            //         SecondaryBuffIndex = secondaryBloodData.BuffIndex,
+            //         ApplyTier4SecondaryBuff = Mathf.Approximately(quality, 100f),
+            //         Amount = addAmount
+            //     }
+            //     : new ConsumeBloodAdminEvent
+            //     {
+            //         PrimaryType = bloodType.ToPrefabGuid(),
+            //         PrimaryQuality = quality,
+            //         SecondaryType = default,
+            //         SecondaryQuality = 0,
+            //         SecondaryBuffIndex = 0,
+            //         ApplyTier4SecondaryBuff = false,
+            //         Amount = addAmount
+            //     };
+
+            // var fromCharacter = new FromCharacter
+            // {
+            //     User = userEntity,
+            //     Character = charEntity
+            // };
+            
+            ChangeBloodDebugEvent changeBloodDebugEvent = new ChangeBloodDebugEvent
+            {
+                Amount = addAmount
+            };
+            server.GetExistingSystemManaged<DebugEventsSystem>().ChangeBloodEvent(user.Index, ref changeBloodDebugEvent);
+            // ConsumeBloodEvent method has been removed in v1.1, no clue how to change types or apply secondary blood changes.
+            // server.GetExistingSystemManaged<DebugEventsSystem>().ConsumeBloodEvent(user.Index, ref ConsumeBloodEvent);
+#if DEBUG
+            Utils.Logger?.LogMessage($"Applied blood type '{bloodType}' to player '{user.Index}' with quality '{quality}' and amount '{addAmount}'.");
 #endif
         }
 
         #endregion
     }
 }
+

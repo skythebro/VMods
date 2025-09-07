@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
-using Bloodstone.API;
+using VAMP;
+
 //using AdminLevel = VMods.Shared.CommandAttribute.AdminLevel;
 
 namespace VMods.Shared
@@ -55,7 +56,7 @@ namespace VMods.Shared
 
 		public static float GetCurrentOrHighestGearScore(FromCharacter fromCharacter)
 		{
-			var entityManager = VWorld.Server.EntityManager;
+			var entityManager = Core.Server.EntityManager;
 			var currentGS = GetCurrentGearScore(fromCharacter, entityManager);
 			if(HighestGearScoreSystemConfig.HighestGearScoreSystemEnabled.Value)
 			{
@@ -112,7 +113,7 @@ namespace VMods.Shared
 				return;
 			}
 
-			var entityManager = VWorld.Server.EntityManager;
+			var entityManager = Core.Server.EntityManager;
 			entityManager.TryGetComponentData<User>(fromCharacter.User, out var user);
 			if(!_gearScoreData.TryGetValue(user.PlatformId, out var gearScoreData))
 			{
@@ -138,7 +139,7 @@ namespace VMods.Shared
 
 		private static void OnVampireDowned(Entity killer, Entity victim)
 		{
-			var entityManager = VWorld.Server.EntityManager;
+			var entityManager = Core.Server.EntityManager;
 			entityManager.TryGetComponentData<PlayerCharacter>(victim, out var victimCharacter);
 			var victumUserEntity = victimCharacter.UserEntity;
 			entityManager.TryGetComponentData<User>(victumUserEntity, out var victumUser);

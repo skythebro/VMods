@@ -1,7 +1,6 @@
 using HarmonyLib;
 using ProjectM;
 using VMods.BloodRefill.Commands;
-using VMods.BloodRefill.Commands.VCFCompat;
 
 namespace VMods.Shared
 {

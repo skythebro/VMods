@@ -1,5 +1,4 @@
-﻿using Bloodstone.API;
-using HarmonyLib;
+﻿using HarmonyLib;
 using ProjectM;
 using Unity.Collections;
 using Unity.Entities;
@@ -27,7 +26,7 @@ namespace VMods.Shared
 		[HarmonyPostfix]
 		private static void OnUpdate(VampireDownedServerEventSystem __instance)
 		{
-			if(!VWorld.IsServer || __instance.__query_1174204813_0.IsEmpty)
+			if(!Utils.IsServer || __instance.__query_1174204813_0.IsEmpty)
 			{
 				return;
 			}

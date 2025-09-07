@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using VampireCommandFramework;
 
 namespace VMods.Shared
 {
@@ -71,17 +70,6 @@ namespace VMods.Shared
 				Utils.Logger.LogError($"Failed to load {filename}! - Error: {ex.Message}\r\n{ex.StackTrace}");
 				return getDefaultValue();
 			}
-		}
-
-		#endregion
-
-		#region Private Methods
-
-		//[Command("saveall", "svall", "Saves all data of all VMod plugins", "true")]
-		private static void OnSaveAllCommand(ChatCommandContext command)
-		{
-			SaveAll();
-			command.Reply($"VMod Plugin '{Utils.PluginName}' saved successfully.");
 		}
 
 		#endregion

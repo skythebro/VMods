@@ -1,27 +1,30 @@
-# ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - Gloomrot Update
-forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot, now also updated to 1.0.
+# ![img.webp](https://i.imgur.com/w9Cl5rk.png) Vmods Blood Refill - 1.1 update
+forked from [WhiteFang5](https://github.com/WhiteFang5/VMods) and updated to Gloomrot, 1.0 and now 1.1.
 All credit goes to him for the original mod.
 
 # A server-side only mod that allows players to refill their blood pool.
 * When feed-killing an enemy, you'll be able to regain some blood.
 * The amount of blood regained is based on the level difference, blood type and blood quality of the killed enemy with V-Bloods refilling your blood pool for a much larger amount.
 * Specific blood types can also be disabled so no blood can be regained from them.
-* Theres also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
+* There's also a setting that makes it so you cannot regain blood if you bloodquality is above a certain percentage.
 * Lots of changes can be made in the config as you can see in the section <ins>**_Configurable Values_**<ins/>
+* Be sure to configure the mod to your liking!
+
+### New in 1.1
+* Added support for the new blood type added in 1.1 (Corruption)
+* ~~Added a new config option to enable/disable secondary blood buffs being kept when refilling blood.~~ WIP currently only primary blood litre amount can be changed 😭 (if you have a solution please let me know)
 
 ---
 
 ## Installation
-- This mod requires [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/) and (Optionally) [VampireCommandFrameWork](https://v-rising.thunderstore.io/package/deca/VampireCommandFramework/) to work.
-- ~~Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!~~
+- This mod requires [VAMP](https://thunderstore.io/c/v-rising/p/skytech6/VAMP)
+- Make sure you use [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/) if you're running a server via client!
 - Place the **_VMods.BloodRefill.dll_** file inside of `(Vrising Server)\BepInEx\plugins` folder
 - If you use any other VMod mods you can put them together in a folder called VMods for less clutter. `(Vrising Server)\BepInEx\plugins\VMods`
 
 ---
 
 ## Configurable Values
-- This mod for now has one command and that is to save the _**BloodRefill.json**_ file `.bloodrefill(blrf) saveall(svall)` this file stores bloodrefill data.
-- The mod already automatically does this with every auto save and on server shutdown/start so there's no real necessity to use this command.
 ```ini
 
 [BloodRefillConfig]
@@ -30,6 +33,11 @@ All credit goes to him for the original mod.
 # Setting type: Boolean
 # Default value: true
 BloodRefillEnabled = true
+
+## When enabled, secondary blood buffs are kept when refilling blood.
+# Setting type: Boolean
+# Default value: true
+BloodRefillKeepSecondaryBloodBuffs = true
 
 ## When enabled, blood can only be refilled when feeding (i.e. when aborting the feed).
 # Setting type: Boolean
@@ -96,6 +104,11 @@ BloodRefillGateBossEnabled = true
 # Default value: true
 BloodRefillDraculaTheImmortalEnabled = true
 
+## When enabled, Corruption blood can be refilled.
+# Setting type: Boolean
+# Default value: true
+BloodRefillCorruptionEnabled = true
+
 ## When enabled, V-blood is excluded from the 'same blood type' check (i.e. it's always considered to be 'the same blood type' as the player's blood type).
 # Setting type: Boolean
 # Default value: true
@@ -151,6 +164,8 @@ BloodRefillDifferentBloodTypeMultiplier = 0.1
 # Default value: false
 BloodRefillSendRefillMessage = false
 ```
+
+## Any issues please report them on the [issues page](
 
 ## Developer & credits
 <details>
