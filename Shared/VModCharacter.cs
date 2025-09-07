@@ -1,5 +1,4 @@
-﻿using Bloodstone.API;
-using ProjectM;
+﻿using ProjectM;
 using ProjectM.Network;
 using Stunlock.Core;
 using Unity.Collections;
@@ -155,10 +154,10 @@ namespace VMods.Shared
 			return BuffUtility.HasBuff(entityManager.Value, FromCharacter.Character, buffGUID);
 		}
 
-		public void SendSystemMessage(string message)
-		{
-			User.SendSystemMessage(message);
-		}
+		// public void SendSystemMessage(string message)
+		// {
+		// 	User.SendSystemMessage(message);
+		// }
 
 		#endregion
 	}

@@ -1,19 +1,14 @@
-﻿using System;
-using BepInEx.IL2CPP;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using VMods.Shared;
-using Bloodstone.API;
 
 namespace VMods.ResourceStashWithdrawal
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-    [BepInDependency("gg.deca.Bloodstone")]
     [BepInDependency("gg.deca.VampireCommandFramework", BepInDependency.DependencyFlags.SoftDependency)]
-    [Reloadable]
-    public class Plugin : BasePlugin, IRunOnInitialized
+    public class Plugin : BasePlugin
     {
         #region Variables
 
@@ -27,24 +22,23 @@ namespace VMods.ResourceStashWithdrawal
         {
             Utils.Initialize(Log, MyPluginInfo.PLUGIN_NAME);
             ResourceStashWithdrawalConfig.Initialize(Config);
+            _hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
         }
 
         public void OnGameInitialized()
         {
-            if (VWorld.IsClient)
+            if (Utils.IsClient)
             {
                 UIClickHook.Reset();
             }
 
             //ResourceStashWithdrawalSystem.Initialize();
             HandleWithdrawItemsCommandSystem.Initialize();
-
-            _hooks = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
+            
             Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_NAME} (v{MyPluginInfo.PLUGIN_VERSION}) is loaded!");
-            if (!VWorld.IsClient)
+            if (!Utils.IsClient)
             {
-            Log.LogInfo("Trying to find VCF:");
+                Log.LogInfo("Trying to find VCF:");
             
                 if (Commands.Commands.Enabled)
                 {

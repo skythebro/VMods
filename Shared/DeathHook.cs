@@ -1,9 +1,7 @@
 ﻿using System;
-using Bloodstone.API;
 using HarmonyLib;
 using ProjectM;
 using Unity.Collections;
-using Unity.Entities;
 
 namespace VMods.Shared
 {
@@ -27,7 +25,7 @@ namespace VMods.Shared
         {
             try
             {
-                if (!VWorld.IsServer || __instance._DeathEventQuery.IsEmpty)
+                if (!Utils.IsServer || __instance._DeathEventQuery.IsEmpty)
                 {
                     return;
                 }

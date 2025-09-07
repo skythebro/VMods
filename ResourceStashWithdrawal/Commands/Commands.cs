@@ -1,7 +1,6 @@
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using System;
-using Bloodstone.API;
 using Il2CppInterop.Runtime;
 using ProjectM;
 using Unity.Entities;

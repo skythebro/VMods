@@ -1,4 +1,5 @@
-﻿using BepInEx.Logging;
+﻿#nullable enable
+using BepInEx.Logging;
 using ProjectM;
 using ProjectM.CastleBuilding;
 using ProjectM.Network;
@@ -7,10 +8,11 @@ using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
-using Bloodstone.API;
 using Il2CppInterop.Runtime;
 using Stunlock.Core;
 using Stunlock.Localization;
+using UnityEngine;
+using VAMP;
 
 namespace VMods.Shared
 {
@@ -18,18 +20,44 @@ namespace VMods.Shared
     {
         #region Variables
 
-        private static ComponentType[] _containerComponents = null;
+        private static ComponentType[]? _containerComponents = null;
 
         #endregion
 
         #region Properties
+        
+        private static World? _clientWorld;
+        private static World? _serverWorld;
+        
+        public static World CurrentWorld => !IsClient ? Core.Server : Client;
+        public static World Client
+        {
+            get
+            {
+                if (_clientWorld != null && _clientWorld.IsCreated)
+                    return _clientWorld;
+                _clientWorld = GetWorld("Client_0") ?? throw new Exception("There is no Client world (yet). Did you install a client mod on the server?");
+                return _clientWorld;
+            }
+        }
+        
+        private static World? GetWorld(string name)
+        {
+            foreach (World sAllWorld in World.s_AllWorlds)
+            {
+                if (sAllWorld.Name == name)
+                {
+                    _serverWorld = sAllWorld;
+                    return sAllWorld;
+                }
+            }
+            return null;
+        }
 
-        public static World CurrentWorld => VWorld.Game;
+        public static ManualLogSource? Logger { get; private set; }
+        public static string? PluginName { get; private set; }
 
-        public static ManualLogSource Logger { get; private set; }
-        public static string PluginName { get; private set; }
-
-        private static ComponentType[] ContainerComponents
+        private static ComponentType[]? ContainerComponents
         {
             get
             {
@@ -52,7 +80,7 @@ namespace VMods.Shared
 
         #region Public Methods
 
-        public static void Initialize(ManualLogSource logger, string pluginName)
+        public static void Initialize(ManualLogSource? logger, string? pluginName)
         {
             Logger = logger;
             PluginName = pluginName;
@@ -110,8 +138,8 @@ namespace VMods.Shared
                         {
                             entityManager.TryGetComponentData<StoredBlood>(stashItem.ItemEntity._Entity, out var itemStoredBlood);
 
-                            if (storedBlood.Value.BloodType != itemStoredBlood.BloodType ||
-                                storedBlood.Value.BloodQuality != itemStoredBlood.BloodQuality)
+                            if (storedBlood.Value.PrimaryBloodType != itemStoredBlood.PrimaryBloodType ||
+                                !Mathf.Approximately(storedBlood.Value.BloodQuality, itemStoredBlood.BloodQuality))
                             {
                                 continue;
                             }
@@ -127,7 +155,7 @@ namespace VMods.Shared
             return stashesCounted == 0 ? -1 : stashCount;
         }
 
-        public static string GetItemName(PrefabGUID itemGUID, GameDataSystem gameDataSystem = null,
+        public static string GetItemName(PrefabGUID itemGUID, GameDataSystem? gameDataSystem = null,
             EntityManager? entityManager = null, PrefabLookupMap? prefabLookupMap = null)
         {
             if (itemGUID == PrefabGUID.Empty)
@@ -156,12 +184,12 @@ namespace VMods.Shared
 
         public static void SendMessage(Entity userEntity, string message, ServerChatMessageType messageType)
         {
-            if (!VWorld.IsServer)
+            if (!IsServer)
             {
                 return;
             }
 
-            EntityManager em = VWorld.Server.EntityManager;
+            EntityManager em = Core.Server.EntityManager;
             em.TryGetComponentData<User>(userEntity, out var user);
             // int index = user.Index;
             // em.TryGetComponentData<NetworkId>(userEntity, out var id);
@@ -190,8 +218,13 @@ namespace VMods.Shared
             // });
             //
             // em.SetComponentData(entity, ev);
-            ServerChatUtils.SendSystemMessageToClient(em, user, message);
+            var fixedString = new FixedString512Bytes(message);
+            ServerChatUtils.SendSystemMessageToClient(em, user, ref fixedString);
         }
+        
+        public static bool IsServer => Application.productName == "VRisingServer";
+        
+        public static bool IsClient => Application.productName == "VRising";
 
         public static bool TryGetPrefabGUIDForItemName(GameDataSystem gameDataSystem, LocalizationKey itemName,
             out PrefabGUID prefabGUID)
@@ -235,7 +268,7 @@ namespace VMods.Shared
 
         public static void ApplyBuff(FromCharacter fromCharacter, PrefabGUID buffGUID)
         {
-            var des = VWorld.Server.GetExistingSystemManaged<DebugEventsSystem>();
+            var des = Core.Server.GetExistingSystemManaged<DebugEventsSystem>();
             var buffEvent = new ApplyBuffDebugEvent()
             {
                 BuffPrefabGUID = buffGUID
@@ -258,7 +291,7 @@ namespace VMods.Shared
             }
         }
 
-        public static string GetCharacterName(ulong platformId, EntityManager? entityManager = null)
+        public static string? GetCharacterName(ulong platformId, EntityManager? entityManager = null)
         {
             entityManager ??= CurrentWorld.EntityManager;
             var users = entityManager.Value.CreateEntityQuery(ComponentType.ReadOnly<User>())
@@ -297,27 +330,27 @@ namespace VMods.Shared
 
             entityManager ??= CurrentWorld.EntityManager;
 
-            Logger.LogMessage($"---");
+            Logger?.LogMessage($"---");
             var types = entityManager.Value.GetComponentTypes(entity);
             foreach (var t in types)
             {
-                Logger.LogMessage(
+                Logger?.LogMessage(
                     $"Component Type: {t} (Shared? {t.IsSharedComponent}) | {t.GetManagedType().FullName}");
             }
 
-            Logger.LogMessage($"---");
+            Logger?.LogMessage($"---");
         }
 
         public static void LogAllComponentTypes(EntityQuery entityQuery)
         {
             var types = entityQuery.GetQueryTypes();
-            Logger.LogMessage($"---");
+            Logger?.LogMessage($"---");
             foreach (var t in types)
             {
-                Logger.LogMessage($"Query Component Type: {t}");
+                Logger?.LogMessage($"Query Component Type: {t}");
             }
 
-            Logger.LogMessage($"---");
+            Logger?.LogMessage($"---");
         }
 
         #endregion

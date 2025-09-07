@@ -1,10 +1,9 @@
 using System;
-using Bloodstone.API;
 using Il2CppSystem.Collections.Generic;
 using ProjectM.Network;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
+using VAMP;
 using VMods.Shared;
 
 namespace VMods.ResourceStashWithdrawal;
@@ -19,8 +18,8 @@ public class HandleWithdrawItemsCommandSystem : SystemBase
     {
         try
         {
-            VNetworkRegistry
-                .RegisterServerbound<WithdrawItemsCommand>(OnWithdrawItemsCommand);
+            // VNetworkRegistry
+            //     .RegisterServerbound<WithdrawItemsCommand>(OnWithdrawItemsCommand);
         }
         catch (Exception e)
         {
@@ -30,27 +29,27 @@ public class HandleWithdrawItemsCommandSystem : SystemBase
 
     public static void Deinitialize()
     {
-        VNetworkRegistry.UnregisterStruct<ResourceStashWithdrawalRequest>();
+        // VNetworkRegistry.UnregisterStruct<ResourceStashWithdrawalRequest>();
     }
 
 
     private static void OnWithdrawItemsCommand(FromCharacter fromCharacter, WithdrawItemsCommand withdrawItemsCommand)
     {
         // Listen for incoming WithdrawItemsCommand messages
-        var query = VWorld.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<WithdrawItemsCommand>());
+        var query = Core.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<WithdrawItemsCommand>());
 
         var entities = query.ToEntityArray(Allocator.TempJob);
         for (int i = 0; i < entities.Length; i++)
         {
             var entity = entities[i];
-            var command = VWorld.Server.EntityManager.GetComponentData<WithdrawItemsCommand>(entity);
+            var command = Core.Server.EntityManager.GetComponentData<WithdrawItemsCommand>(entity);
             if (!itemsToWithdraw.ContainsKey(command.PlatformId))
             {
                 itemsToWithdraw[command.PlatformId] = new Dictionary<int, int>();
             }
             itemsToWithdraw[command.PlatformId] = command.ItemsToWithdraw;
             
-            VWorld.Server.EntityManager.DestroyEntity(entity);
+            Core.Server.EntityManager.DestroyEntity(entity);
         }
         entities.Dispose();
     }

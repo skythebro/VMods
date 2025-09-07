@@ -1,14 +1,11 @@
-﻿using Backtrace.Unity.Common;
-using HarmonyLib;
+﻿using HarmonyLib;
 using ProjectM;
 using ProjectM.UI;
 using Il2CppSystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using VMods.Shared;
-using Bloodstone.API;
 using Il2CppSystem.Collections.Generic;
-using ProjectM.Gameplay.Systems;
 using ProjectM.Network;
 using Stunlock.Core;
 using Unity.Collections;
@@ -41,7 +38,7 @@ namespace VMods.ResourceStashWithdrawal
         public static void OnPointerClick(GridSelectionEntry __instance, PointerEventData eventData)
         {
             UITooltipHook.OnPointerEnter(__instance, eventData);
-            if (!VWorld.IsClient || eventData.button != PointerEventData.InputButton.Middle ||
+            if (!Utils.IsClient || eventData.button != PointerEventData.InputButton.Middle ||
                 DateTime.UtcNow.Subtract(_lastResourceRequest).TotalSeconds <= 0.2f)
             {
                 return;
@@ -52,7 +49,7 @@ namespace VMods.ResourceStashWithdrawal
 
             bool withdrawFullAmount = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
-            var client = VWorld.Client;
+            var client = Utils.Client;
             var entityManager = client.EntityManager;
             var gameDataSystem = client.GetExistingSystemManaged<GameDataSystem>();
             var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
@@ -380,7 +377,8 @@ namespace VMods.ResourceStashWithdrawal
                 PlatformId = userPlatformId,
                 ItemsToWithdraw = UIClickHook.itemsToWithdraw[userPlatformId]
             };
-            VNetwork.SendToServer(command);
+            // disabled for now
+            //VNetwork.SendToServer(command);
         }
         
 

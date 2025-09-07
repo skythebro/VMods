@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Bloodstone.API;
 using VMods.Shared;
 
 namespace VMods.ResourceStashWithdrawal
@@ -47,7 +46,8 @@ namespace VMods.ResourceStashWithdrawal
                         nextRequest = requests.Dequeue();
                     }
 
-                    VNetwork.SendToServerStruct(nextRequest);
+                    // fix this line
+                    // VNetwork.SendToServerStruct(nextRequest);
 
 
                     // Add a delay cuz otherwise the server will get flooded with requests, I could run coroutine but this works too

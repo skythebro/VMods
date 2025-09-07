@@ -1,11 +1,10 @@
-using Bloodstone.API;
 using ProjectM;
-using ProjectM.Network;
 using Stunlock.Core;
 using Unity.Entities;
 using VampireCommandFramework;
 using VMods.Shared;
 using System;
+using VAMP;
 
 namespace VMods.ResourceStashWithdrawal;
 
@@ -13,7 +12,7 @@ public class CommandResourceStashWIthDrawalSystem
 {
     public static void GetItemsForRecipe(ChatCommandContext ctx)
     {
-        if (!VWorld.IsServer || ctx.User.LocalCharacter._Entity == Entity.Null)
+        if (!Utils.IsServer || ctx.User.LocalCharacter._Entity == Entity.Null)
         {
             // This isn't running on a server, or a non-existing character made the request -> stop trying to move items
             return;
@@ -21,7 +20,7 @@ public class CommandResourceStashWIthDrawalSystem
 
         
         
-        var server = VWorld.Server;
+        var server = Core.Server;
         var gameDataSystem = server.GetExistingSystemManaged<GameDataSystem>();
         var itemHashLookupMap = gameDataSystem.ItemHashLookupMap;
         var prefabCollectionSystem = server.GetExistingSystemManaged<PrefabCollectionSystem>();
