@@ -165,7 +165,7 @@ BloodRefillDifferentBloodTypeMultiplier = 0.1
 BloodRefillSendRefillMessage = false
 ```
 
-## Any issues please report them on the [issues page](
+## Any issues please report them on the [issues page](https://github.com/skythebro/VMods/issues)
 
 ## Developer & credits
 <details>
