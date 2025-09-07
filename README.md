@@ -12,7 +12,7 @@ VMods is a selection of Mods for V-Rising made using a common/shared codebase th
 * Check out the other readme's in their respective folders for more info
 ### How to manually install
 * Install [BepInEx](https://v-rising.thunderstore.io/package/BepInEx/BepInExPack_V_Rising/)
-* Install [Bloodstone](https://v-rising.thunderstore.io/package/deca/Bloodstone/)
+* Install [VAMP](https://thunderstore.io/c/v-rising/p/skytech6/VAMP)
 * (Locally hosted games only) Install [ServerLaunchFix](https://v-rising.thunderstore.io/package/Mythic/ServerLaunchFix/)
 * Extract the Vmods._mod-name_.dll
 * Move the desired mod(s) to the `[VRising (server) folder]/BepInEx/Plugins/`
